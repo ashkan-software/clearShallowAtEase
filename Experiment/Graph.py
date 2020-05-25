@@ -88,7 +88,7 @@ def create_graph_MLP_camera(skip_hyperconnection_config = None):
     return G
 
 def fail_node_graph(graph, node_failure_combination, exp):
-    if exp == "CIFAR/Imagenet":
+    if exp == "CIFAR/Imagenet" or exp == "ResNet":
         nodes = ["f", "e"]
     if exp == "Health":
         nodes = ["f1", "f2", "e"]
@@ -99,7 +99,7 @@ def fail_node_graph(graph, node_failure_combination, exp):
             graph.remove_node(nodes[index])
 
 def identify_no_information_flow_graph(graph, exp):
-    if exp == "CIFAR/Imagenet":
+    if exp == "CIFAR/Imagenet" or exp == "ResNet":
         return not nx.has_path(graph, 'IoT', 'c')
     if exp == "Health":
         return not nx.has_path(graph, 'IoT', 'c')

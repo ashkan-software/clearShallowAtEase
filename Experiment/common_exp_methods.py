@@ -175,7 +175,7 @@ def compile_keras_parallel_model(input, cloud_output, num_gpus, name='ANRL_mobil
     return model, parallel_model
 
 def make_no_information_flow_map(exp, skip_hyperconnection_config = None):
-    if exp == "CIFAR/Imagenet":
+    if exp == "CIFAR/Imagenet" or  exp == "ResNet":
         graph = create_graph_CNN(skip_hyperconnection_config)
         numNodes = 2
     if exp == "Health":

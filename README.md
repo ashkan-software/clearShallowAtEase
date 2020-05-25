@@ -1,4 +1,12 @@
 
+# [Code] Failout: Achieving Failure-Resilient Inference in Distributed Neural Networks
+
+This repository is for the code related to the paper *Failout: Achieving Failure-Resilient Inference in Distributed Neural Networks*.
+
+## What is Failout?
+
+When a neural network is partitioned and distributed across physical nodes, failure of physical nodes causes the failure of the neural units that are placed on those nodes, which results in a significant performance drop. We introduce ResiliNet, a scheme for making inference in distributed neural networks resilient to physical node failures. ResiliNet combines two concepts to provide resiliency: skip connection in residual neural networks, and a novel technique called failout. Failout simulates physical node failure conditions during training using dropout, and is specifically designed to improve the resiliency of distributed neural networks. 
+
 ## How to run
 
 All of the files to run the experiments reside in `Experiment` folder. The name of the python files start with the *experiment dataset*, followed by the *type of experiment*. For instance, you can run the *Health* experiment, and get the *average accuracy* by running:
@@ -7,7 +15,7 @@ All of the files to run the experiments reside in `Experiment` folder. The name 
  python Experiment/health_average_accuracy.py 
 ```
 
-In general, you can run the experiments using the following rule:
+If you are using Python 3.x, replace `python` with `python3`. In general, you can run the experiments using the following rule:
 
 ```
  python Experiment/<dataset>_<experiment-type>.py 
@@ -24,13 +32,15 @@ The datasets and the preprocessing methods are explained in the paper. The exper
 
 ## Dependencies
 
-The following python packages are required to run these experiments:
-
+The following python packages are required to run these experiments. 
 - Keras
 - sklearn
 - networkx
 - pandas
 - cv2
+
+Some of these packages are required only for a particular experiment, so you may simply try running the experiment and see if any package is missing:
+
 
 ## Output
 

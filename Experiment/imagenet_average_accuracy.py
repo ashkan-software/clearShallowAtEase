@@ -9,7 +9,7 @@ import gc
 import os
 import numpy as np
 from Experiment.common_exp_methods import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard import default_skip_hyperconnection_config
+from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 
 import tensorflow as tf
 def define_and_train(iteration, model_name, load_for_inference, continue_training, train_generator, val_generator, input_shape, classes, alpha,num_train_examples, epochs,num_gpus, strides, num_workers):

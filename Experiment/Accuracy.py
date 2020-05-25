@@ -60,6 +60,7 @@ class accuracy:
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN(model, nodes, index)
+        elif self.experiment_name == "ResNet":
 
         elif self.experiment_name == "Health":              
             nodes = ["fog1_output_layer","fog2_output_layer","edge_output_layer"]

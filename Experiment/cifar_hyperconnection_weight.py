@@ -6,24 +6,24 @@ from keras.callbacks import ModelCheckpoint
 import keras.backend as K
 import math
 import os 
-from Experiment.cnn_deepFogGuard import define_deepFogGuard_CNN
-from Experiment.cnn_ResiliNet import define_ResiliNet_CNN
+from Experiment.cnn_deepFogGuard_MobileNet import define_deepFogGuard_CNN_MobileNet
+from Experiment.cnn_ResiliNet_MobileNet import define_ResiliNet_CNN_MobileNet
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods import average, make_results_folder, make_output_dictionary_hyperconnection_weight, write_n_upload
 from Experiment.common_exp_methods_CNN_cifar import init_data, init_common_experiment_params, get_model_weights_CNN_cifar
 import numpy as np
 import gc
 from Experiment.common_exp_methods import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard import default_skip_hyperconnection_config
+from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, weight_scheme, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
     K.set_learning_phase(1)
     if model_name == "DeepFogGuard Hyperconnection Weight":
         model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_hyperconnection_deepFogGuard.h5'
-        model, parallel_model = define_deepFogGuard_CNN(classes=classes,input_shape = input_shape, alpha = alpha,reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme, strides = strides, num_gpus=num_gpus)
+        model, parallel_model = define_deepFogGuard_CNN_MobileNet(classes=classes,input_shape = input_shape, alpha = alpha,reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme, strides = strides, num_gpus=num_gpus)
     else: # model_name is "ResiliNet Hyperconnection Weight"
         model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_hyperconnection_ResiliNet.h5'
-        model, parallel_model = define_ResiliNet_CNN(classes=classes,input_shape = input_shape, alpha = alpha,reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme, strides = strides, num_gpus=num_gpus)
+        model, parallel_model = define_ResiliNet_CNN_MobileNet(classes=classes,input_shape = input_shape, alpha = alpha,reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme, strides = strides, num_gpus=num_gpus)
     get_model_weights_CNN_cifar(model, parallel_model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus)
     return model
            

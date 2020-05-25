@@ -1,8 +1,8 @@
 
-from keras.applications.mobilenet import MobileNet
 import keras.backend as K
 import math
 import os 
+from Experiment.ResNet_blocks import ResNet18
 from Experiment.common_exp_methods_CNN import define_model
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods_CNN_cifar import init_data, init_common_experiment_params, get_model_weights_CNN_cifar 
@@ -14,20 +14,20 @@ from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_c
 
 def define_and_train(iteration, model_name, load_for_inference, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
     K.set_learning_phase(1)
-    model, parallel_model, model_file = define_model(iteration, model_name, "cifar", input_shape, classes, alpha, strides, num_gpus, weights=None)
+    model, parallel_model, model_file = define_model(iteration, model_name, "cifar_resnet", input_shape, classes, alpha, strides, num_gpus, weights=None) #change inside
     get_model_weights_CNN_cifar(model, parallel_model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus)
     return model
 
 if __name__ == "__main__":
-    accuracy = accuracy("CIFAR")
+    accuracy = accuracy("ResNet") # change inside
     calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
     training_data, test_data, training_labels, test_labels, val_data, val_labels = init_data() 
 
     num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus = init_common_experiment_params()
     
-    ResiliNet_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
-    deepFogGuard_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
-    Vanilla_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet")
+    ResiliNet_no_information_flow_map = make_no_information_flow_map("ResNet", default_skip_hyperconnection_config)
+    deepFogGuard_no_information_flow_map = make_no_information_flow_map("ResNet", default_skip_hyperconnection_config)
+    Vanilla_no_information_flow_map = make_no_information_flow_map("ResNet")
 
     train_steps_per_epoch = math.ceil(len(training_data) / batch_size)
     val_steps_per_epoch = math.ceil(len(val_data) / batch_size)
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     load_for_inference = False
     
     make_results_folder()
-    output_name = 'results' + '/cifar_average_accuracy_results.txt'
+    output_name = 'results' + '/cifar_resnet_average_accuracy_results.txt'
     output_list = []
     for iteration in range(1,num_iterations+1):
         print("iteration:",iteration)

@@ -13,18 +13,18 @@ from Experiment.common_exp_methods import compile_keras_parallel_model
 
 BASE_WEIGHT_PATH = ('https://github.com/fchollet/deep-learning-models/'
                     'releases/download/v0.6/')
-def define_vanilla_model_CNN(input_shape=None,
-                            alpha=1.0,
-                            depth_multiplier=1,
-                            include_top=True,
-                            input_tensor=None,
-                            pooling=None,
-                            classes=1000,
-                            strides = (2,2),
-                            num_gpus = 1,
-                            dropout=1e-3,
-                            weights=None,
-                            **kwargs):
+def define_vanilla_CNN_MobileNet(input_shape=None,
+                                alpha=1.0,
+                                depth_multiplier=1,
+                                include_top=True,
+                                input_tensor=None,
+                                pooling=None,
+                                classes=1000,
+                                strides = (2,2),
+                                num_gpus = 1,
+                                dropout=1e-3,
+                                weights=None,
+                                **kwargs):
     """Instantiates the MobileNet architecture.
 
     # Arguments
