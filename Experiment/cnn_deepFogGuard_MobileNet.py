@@ -63,11 +63,10 @@ def define_deepFogGuard_CNN_MobileNet(input_shape=None,
     return model, parallel_model
 
 def define_cnn_deepFogGuard_architecture_IoT(input_shape, alpha, img_input, strides = (2,2)):
-    # changed the strides from 2 to 1 since cifar-10 images are smaller
     iot_output = define_cnn_architecture_IoT(img_input,alpha,strides = strides)
 
-    # used stride 1 to match (32,32,3) to (32,32,64)
-    # 1x1 conv2d is used to change the filter size (from 3 to 64)
+    # Need to go from (32,32,3) to (32,32,64)
+    # 1x1 conv2d is used to change the filter size (from 3 to 64).  
     # cifar-10
     if strides == (1,1):
         # 64 (alpha=0.5), 96 (alpha=0.75)
@@ -85,7 +84,7 @@ def define_cnn_deepFogGuard_architecture_edge(iot_output, alpha, depth_multiplie
     if edge_failure_lambda != None:
          edge_output = edge_failure_lambda(edge_output)
     # used stride 4 to match (31,31,64) to (7,7,256)
-    # 1x1 conv2d is used to change the filter size (from 64 to 256)
+    # 1x1 conv2d is used to change the filter size (from 64 to 256).  Stride is 4 for 31->7
     # 256 (alpha=0.5), 384 (alpha=0.75)
     skip_edgecloud = layers.Conv2D(384,(1,1),strides = 4, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
     return edge_output, skip_edgecloud

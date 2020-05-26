@@ -9,11 +9,12 @@ import keras.backend as K
 import keras.layers as layers
 from keras_applications.imagenet_utils import _obtain_input_shape, get_submodules_from_kwargs
 import random 
-from Experiment.cnn_Vanilla_ResNet import define_cnn_architecture_IoT, define_cnn_architecture_cloud, define_cnn_architecture_edge, define_cnn_architecture_fog
+from Experiment.common_exp_methods_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
+from Experiment.cnn_Vanilla_ResNet import define_cnn_architecture_IoT, define_cnn_architecture_cloud, define_cnn_architecture_edge, define_cnn_architecture_fog, init_model
 from Experiment.common_exp_methods import compile_keras_parallel_model
 
 default_skip_hyperconnection_config = [1,1]
-def define_deepFogGuard_CNN_MobileNet(input_shape=None, classes=10, block='bottleneck', residual_unit='v2',
+def define_deepFogGuard_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', residual_unit='v2',
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
@@ -35,75 +36,57 @@ def define_deepFogGuard_CNN_MobileNet(input_shape=None, classes=10, block='bottl
         hyperconnection_weight_ec,
         hyperconnection_weight_fc)
 
-    # Determine proper input shape and default size.
-    img_input = layers.Input(shape=input_shape)  
-
-    # iot node
-    iot_output,skip_iotfog = define_cnn_deepFogGuard_architecture_IoT(input_shape,alpha,img_input, strides = strides)
-
-    # edge node
-    edge_output, skip_edgecloud = define_cnn_deepFogGuard_architecture_edge(iot_output,alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe, strides = strides)
-
+    input_shape, block_fn, residual_unit = init_model(input_shape, classes, include_top, block, residual_unit, activation)
+    img_input = layers.Input(shape=input_shape, tensor=input_tensor) 
+    
+    # IoT Node
+    iot_output,skip_iotfog = define_cnn_deepFogGuard_architecture_IoT(img_input, initial_filters, initial_kernel_size, initial_strides)
+    # edge 
+    edge_output, skip_edgecloud, filters = define_cnn_deepFogGuard_architecture_edge(iot_output, repetitions[0], transition_dilation_rate, block_fn, initial_filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe)
+    
     # fog node
-    fog_output = define_cnn_deepFogGuard_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef, strides = strides)
-
+    fog_output, filters = define_cnn_deepFogGuard_architecture_fog(skip_iotfog, edge_output, repetitions[1], transition_dilation_rate, block_fn, filters, dropout, residual_unit, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef)
+    
     # cloud node
-    cloud_output = define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
+    cloud_output = define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud_output, num_gpus)
     return model, parallel_model
 
-def define_cnn_deepFogGuard_architecture_IoT(input_shape, alpha, img_input, strides = (2,2)):
-    # changed the strides from 2 to 1 since cifar-10 images are smaller
-    iot_output = define_cnn_architecture_IoT(img_input,alpha,strides = strides)
 
-    # used stride 1 to match (32,32,3) to (32,32,64)
-    # 1x1 conv2d is used to change the filter size (from 3 to 64)
+def define_cnn_deepFogGuard_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides):
+    iot_output = define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides)
+    # need to go from (112,112,64) to (56,56,128) ????
+    # 1x1 conv2d is used to change the filter size (from 64 to 128). Stride is 2 for 112->56
     # cifar-10
-    if strides == (1,1):
-        # 64 (alpha=0.5), 96 (alpha=0.75)
-        skip_iotfog = layers.Conv2D(96,(1,1),strides = 1, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
-    elif strides == (2,2):
-        skip_iotfog = layers.Conv2D(96,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
-    else:
-        raise ValueError("Invalid stride configuration")
+    skip_iotfog = layers.Conv2D(128,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
     return iot_output, skip_iotfog
 
-def define_cnn_deepFogGuard_architecture_edge(iot_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe = None, strides = (2,2), edge_failure_lambda = None):
+def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe = None, edge_failure_lambda = None):
     if multiply_hyperconnection_weight_layer_IoTe != None:
         iot_output = multiply_hyperconnection_weight_layer_IoTe(iot_output)
-    edge_output = define_cnn_architecture_edge(iot_output,alpha,depth_multiplier, strides= strides)
+    edge_output, filters = define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides)
     if edge_failure_lambda != None:
          edge_output = edge_failure_lambda(edge_output)
-    # used stride 4 to match (31,31,64) to (7,7,256)
-    # 1x1 conv2d is used to change the filter size (from 64 to 256)
-    # 256 (alpha=0.5), 384 (alpha=0.75)
-    skip_edgecloud = layers.Conv2D(384,(1,1),strides = 4, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
-    return edge_output, skip_edgecloud
+    # need to go from (56,56,64) to (28,28,256) ????
+    # 1x1 conv2d is used to change the filter size (from 64 to 256).  Stride is 2 for 56->28
+    skip_edgecloud = layers.Conv2D(256,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
+    return edge_output, skip_edgecloud, filters
    
 
-def define_cnn_deepFogGuard_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTf = None, multiply_hyperconnection_weight_layer_ef = None, strides = (2,2)):
+def define_cnn_deepFogGuard_architecture_fog(skip_iotfog, edge_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, multiply_hyperconnection_weight_layer_IoTf = None, multiply_hyperconnection_weight_layer_ef = None):
     if multiply_hyperconnection_weight_layer_IoTf == None or multiply_hyperconnection_weight_layer_ef == None:
         fog_input = layers.add([skip_iotfog, edge_output], name = "node2_input")
     else:
         fog_input = layers.add([multiply_hyperconnection_weight_layer_IoTf(skip_iotfog), multiply_hyperconnection_weight_layer_ef(edge_output)], name = "node2_input")
-    fog = define_cnn_architecture_fog(fog_input,alpha,depth_multiplier)
-    # cnn for imagenet does not need padding
-    if strides == (2,2):
-        fog_output = fog
-    elif strides == (1,1):
-        # pad from (7,7,256) to (8,8,256)
-        fog_output = layers.ZeroPadding2D(padding = ((0, 1), (0, 1)), name = "fogcloud_connection_padding")(fog)
-    else:
-        raise ValueError("Incorrect stride value")
-    
-    return fog_output
+    fog_output, filters = define_cnn_architecture_fog(fog_input, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    return fog_output, filters
 
-def define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, multiply_hyperconnection_weight_layer_fc = None, multiply_hyperconnection_weight_layer_ec = None):
+def define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, r1, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling, multiply_hyperconnection_weight_layer_fc = None, multiply_hyperconnection_weight_layer_ec = None):
     if multiply_hyperconnection_weight_layer_fc == None or multiply_hyperconnection_weight_layer_ec == None:
         cloud_input = layers.add([fog_output, skip_edgecloud], name = "node1_input")
     else:
         cloud_input = layers.add([multiply_hyperconnection_weight_layer_fc(fog_output), multiply_hyperconnection_weight_layer_ec(skip_edgecloud)], name = "node1_input")
-    cloud_output = define_cnn_architecture_cloud(cloud_input,alpha,depth_multiplier,classes,include_top,pooling)
+    cloud_output = define_cnn_architecture_cloud(cloud_input, r1, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
     return cloud_output
 
