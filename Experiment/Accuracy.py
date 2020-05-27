@@ -55,13 +55,16 @@ class accuracy:
                 if node == 0: # if dead
                     set_weights_zero_MLP(model, nodes, index)
             
-        elif self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet" : 
+        elif self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
             nodes = ["conv_pw_8","conv_pw_3"]
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN(model, nodes, index)
         elif self.experiment_name == "ResNet":
-
+            nodes = ["node2_input","node1_input"]
+            for index,node in enumerate(node_failure_combination):
+                if node == 0: # dead
+                    set_weights_zero_CNN(model, nodes, index)
         elif self.experiment_name == "Health":              
             nodes = ["fog1_output_layer","fog2_output_layer","edge_output_layer"]
             for index,node in enumerate(node_failure_combination):

@@ -13,12 +13,12 @@ from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_c
 
 def define_and_train(iteration, model_name, load_for_inference, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
     K.set_learning_phase(1)
-    model, parallel_model, model_file = define_model(iteration, model_name, "cifar_resnet", input_shape, classes, alpha, strides, num_gpus, weights=None) #change inside
+    model, parallel_model, model_file = define_model(iteration, model_name, "cifar_resnet", input_shape, classes, alpha, strides, num_gpus, weights=None)
     get_model_weights_CNN_cifar(model, parallel_model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus)
     return model
 
 if __name__ == "__main__":
-    accuracy = accuracy("ResNet") # change inside
+    accuracy = accuracy("ResNet")
     calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
     training_data, test_data, training_labels, test_labels, val_data, val_labels = init_data() 
 

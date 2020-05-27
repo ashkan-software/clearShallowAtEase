@@ -87,6 +87,7 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', 
     cloud = define_cnn_architecture_cloud(cloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud, num_gpus)
+    model.summary()
     return model, parallel_model
 
 def init_model(input_shape, classes, include_top, block, residual_unit, activation):
