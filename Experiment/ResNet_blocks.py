@@ -373,7 +373,9 @@ def ResNet(input_shape=None, classes=10, block='bottleneck', residual_unit='v2',
                                       data_format=K.image_data_format(),
                                       require_flatten=include_top)
 
+    print (input_shape, block_fn, residual_unit)
     img_input = Input(shape=input_shape, tensor=input_tensor)
+    
     x = _conv_bn_relu(filters=initial_filters, kernel_size=initial_kernel_size,
                       strides=initial_strides)(img_input)
     if initial_pooling == 'max':

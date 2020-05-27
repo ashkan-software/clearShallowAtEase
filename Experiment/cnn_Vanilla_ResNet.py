@@ -79,12 +79,12 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', 
     edge, filters = define_cnn_architecture_edge(iot, repetitions[0], transition_dilation_rate, block_fn, initial_filters, dropout, residual_unit, initial_pooling, initial_strides)
     
     # fog node
-    fog = layers.Lambda(lambda x : x * 1,name = 'node2_input')(edge)
-    fog, filters = define_cnn_architecture_fog(fog, repetitions[1], transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    # fog = layers.Lambda(lambda x : x * 1,name = 'node2_input')(edge)
+    fog, filters = define_cnn_architecture_fog(edge, repetitions[1], transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     
     # cloud node
-    cloud = layers.Lambda(lambda x : x * 1,name = 'node1_input')(fog)
-    cloud = define_cnn_architecture_cloud(cloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
+    # cloud = layers.Lambda(lambda x : x * 1,name = 'node1_input')(fog)
+    cloud = define_cnn_architecture_cloud(fog, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud, num_gpus)
     model.summary()
@@ -133,6 +133,7 @@ def init_model(input_shape, classes, include_top, block, residual_unit, activati
                                       data_format=K.image_data_format(),
                                       require_flatten=include_top)
 
+    print (input_shape, block_fn, residual_unit)
     return input_shape, block_fn, residual_unit                              
 
 def define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides):
