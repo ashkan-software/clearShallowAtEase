@@ -2,7 +2,6 @@
 import keras.backend as K
 import math
 import os 
-from Experiment.ResNet_blocks import ResNet18
 from Experiment.common_exp_methods_CNN import define_model
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods_CNN_cifar import init_data, init_common_experiment_params, get_model_weights_CNN_cifar 
