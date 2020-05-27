@@ -14,7 +14,7 @@ from Experiment.common_exp_methods import compile_keras_parallel_model
 
 BASE_WEIGHT_PATH = ('https://github.com/fchollet/deep-learning-models/'
                     'releases/download/v0.6/')
-def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', residual_unit='v2',
+def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='basic', residual_unit='v2',
                             repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                             input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                             initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
@@ -79,15 +79,14 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', 
     edge, filters = define_cnn_architecture_edge(iot, repetitions[0], transition_dilation_rate, block_fn, initial_filters, dropout, residual_unit, initial_pooling, initial_strides)
     
     # fog node
-    # fog = layers.Lambda(lambda x : x * 1,name = 'node2_input')(edge)
-    fog, filters = define_cnn_architecture_fog(edge, repetitions[1], transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    fog = layers.Lambda(lambda x : x * 1,name = 'node2_input')(edge)
+    fog, filters = define_cnn_architecture_fog(fog, repetitions[1], transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     
     # cloud node
-    # cloud = layers.Lambda(lambda x : x * 1,name = 'node1_input')(fog)
-    cloud = define_cnn_architecture_cloud(fog, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
+    cloud = layers.Lambda(lambda x : x * 1,name = 'node1_input')(fog)
+    cloud = define_cnn_architecture_cloud(cloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud, num_gpus)
-    model.summary()
     return model, parallel_model
 
 def init_model(input_shape, classes, include_top, block, residual_unit, activation):
