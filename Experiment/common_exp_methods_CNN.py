@@ -1,7 +1,12 @@
 from Experiment.cnn_Vanilla_MobileNet import define_vanilla_CNN_MobileNet
 from Experiment.cnn_deepFogGuard_MobileNet import define_deepFogGuard_CNN_MobileNet
 from Experiment.cnn_ResiliNet_MobileNet import define_ResiliNet_CNN_MobileNet
-from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
+from Experiment.cnn_Vanilla_ResNet import define_vanilla_CNN_ResNet
+from Experiment.cnn_deepFogGuard_ResNet import define_deepFogGuard_CNN_ResNet
+from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet
+from Experiment.Custom_Layers import Failout
+import keras.layers as layers
+import random
 
 def set_hyperconnection_weights(hyperconnection_weights_scheme,reliability_setting, skip_hyperconnection_config):
     # weighted by 1
@@ -66,11 +71,24 @@ def define_hyperconnection_weight_lambda_layers(hyperconnection_weight_IoTe, hyp
     multiply_hyperconnection_weight_layer_fc = layers.Lambda((lambda x: x * hyperconnection_weight_fc), name = "connection_weight_fc")
     return multiply_hyperconnection_weight_layer_IoTe, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef, multiply_hyperconnection_weight_layer_ec, multiply_hyperconnection_weight_layer_fc
 
+def cnn_failout_definitions(failout_survival_setting):
+    edge_reliability = failout_survival_setting[0]
+    fog_reliability = failout_survival_setting[1]
+    
+    edge_failure_lambda = Failout(edge_reliability)
+    fog_failure_lambda = Failout(fog_reliability)
+    return edge_failure_lambda, fog_failure_lambda
+
 def define_model(iteration, model_name, dataset_name, input_shape, classes, alpha, strides, num_gpus, weights):
     # ResiliNet
     if model_name == "ResiliNet":
         if dataset_name == "cifar_resnet":
-
+            model, parallel_model = define_ResiliNet_CNN_ResNet(input_shape=input_shape, classes=classes, block='bottleneck', residual_unit='v2',
+                                repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
+                                input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
+                                initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
+                                final_pooling=None, top='classification',
+                                num_gpus = num_gpus)
         else:
             model, parallel_model = define_ResiliNet_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, strides = strides, num_gpus=num_gpus, weights=weights)
         model_file = "models/" + dataset_name + str(iteration) + 'average_accuracy_ResiliNet.h5'

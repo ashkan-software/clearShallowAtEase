@@ -11,9 +11,9 @@ import keras.layers as layers
 from keras.layers import Lambda
 
 from Experiment.cnn_deepFogGuard_MobileNet import define_cnn_deepFogGuard_architecture_IoT, define_cnn_deepFogGuard_architecture_edge
-from Experiment.cnn_deepFogGuard_MobileNet import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
+from Experiment.common_exp_methods_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers, cnn_failout_definitions
 from Experiment.cnn_Vanilla_MobileNet import imagenet_related_functions, define_cnn_architecture_cloud, define_cnn_architecture_fog
-from Experiment.Custom_Layers import Failout, InputMux
+from Experiment.Custom_Layers import InputMux
 from Experiment.common_exp_methods import compile_keras_parallel_model
 from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 # ResiliNet
@@ -101,12 +101,3 @@ def define_cnn_ResiliNet_architecture_cloud(fog_output, skip_edgecloud, alpha, d
         cloud_input = Lambda(InputMux(fog_failure_lambda.has_failed),name="node1_input")([multiply_hyperconnection_weight_layer_ec(skip_edgecloud), multiply_hyperconnection_weight_layer_fc(fog_output)]) 
     cloud_output = define_cnn_architecture_cloud(cloud_input,alpha,depth_multiplier,classes,include_top,pooling)
     return cloud_output
-
-def cnn_failout_definitions(failout_survival_setting):
-    edge_reliability = failout_survival_setting[0]
-    fog_reliability = failout_survival_setting[1]
-    
-
-    edge_failure_lambda = Failout(edge_reliability)
-    fog_failure_lambda = Failout(fog_reliability)
-    return edge_failure_lambda, fog_failure_lambda
