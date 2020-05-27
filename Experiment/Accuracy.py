@@ -26,7 +26,6 @@ class accuracy:
             layer_weights = layer.get_weights()
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
-            #new_weights[:] = np.nan # set weights to nan
             # make new weights for biases
             new_bias_weights = np.zeros(layer_weights[1].shape)
             layer.set_weights([new_weights,new_bias_weights])
@@ -61,7 +60,8 @@ class accuracy:
                 if node == 0: # dead
                     set_weights_zero_CNN(model, nodes, index)
         elif self.experiment_name == "ResNet":
-            nodes = ["node2_input","node1_input"]
+            layers_edge = ["conv2d_7","conv2d_3","conv2d_4"]
+            layers_fog = ["conv2d_14","conv2d_10","conv2d_11"]
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN(model, nodes, index)
