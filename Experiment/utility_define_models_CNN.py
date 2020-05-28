@@ -21,7 +21,7 @@ def define_model(iteration, model_name, dataset_name, input_shape, classes, alph
     # deepFogGuard
     if model_name == "deepFogGuard":
         if dataset_name == "cifar_resnet":
-            model, parallel_model = define_deepFogGuard_CNN_ResNet(input_shape=input_shape, classes=classes, block='baisc', residual_unit='v2',
+            model, parallel_model = define_deepFogGuard_CNN_ResNet(input_shape=input_shape, classes=classes, block='basic', residual_unit='v2',
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',

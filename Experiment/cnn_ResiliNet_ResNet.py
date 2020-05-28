@@ -16,7 +16,7 @@ from Experiment.Custom_Layers import InputMux
 from Experiment.common_exp_methods import compile_keras_parallel_model
 from Experiment.cnn_deepFogGuard_ResNet import default_skip_hyperconnection_config
 # ResiliNet
-def define_ResiliNet_CNN_ResNet(input_shape=None, classes=10, block='bottleneck', residual_unit='v2',
+def define_ResiliNet_CNN_ResNet(input_shape=None, classes=10, block='basic', residual_unit='v2',
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                 initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',

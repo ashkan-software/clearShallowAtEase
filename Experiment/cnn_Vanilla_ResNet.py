@@ -131,8 +131,7 @@ def init_model(input_shape, classes, include_top, block, residual_unit, activati
                                       min_size=8,
                                       data_format=K.image_data_format(),
                                       require_flatten=include_top)
-
-    print (input_shape, block_fn, residual_unit)
+                                      
     return input_shape, block_fn, residual_unit                              
 
 def define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides):
