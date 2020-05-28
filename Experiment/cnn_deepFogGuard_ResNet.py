@@ -69,7 +69,7 @@ def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation
     edge_output, filters = define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides)
     if edge_failure_lambda != None:
          edge_output = edge_failure_lambda(edge_output)
-    # need to go from (56,56,64) to (28,28,128) ????
+    # need to go from (4,4,64) to (2,2,128) ????
     # 1x1 conv2d is used to change the filter size (from 64 to 256).  Stride is 2 for 56->28
     skip_edgecloud = layers.Conv2D(128,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
     return edge_output, skip_edgecloud, filters
