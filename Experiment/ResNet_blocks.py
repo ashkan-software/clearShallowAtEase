@@ -37,7 +37,7 @@ def _bn_relu(x, bn_name=None, relu_name=None):
     return Activation("relu", name=relu_name)(norm)
 
 
-def _conv_bn_relu(**conv_params):
+def _conv_bn_relu(block_id, **conv_params):
     """Helper to build a conv -> BN -> relu residual unit activation function.
        This is the original ResNet v1 scheme in https://arxiv.org/abs/1512.03385
     """
@@ -45,9 +45,9 @@ def _conv_bn_relu(**conv_params):
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
     dilation_rate = conv_params.setdefault("dilation_rate", (1, 1))
-    conv_name = conv_params.setdefault("conv_name", None)
-    bn_name = conv_params.setdefault("bn_name", None)
-    relu_name = conv_params.setdefault("relu_name", None)
+    conv_name = conv_params.setdefault("conv_name", "conv2d_" + block_id)
+    bn_name = conv_params.setdefault("bn_name", "batch_normalization_"+ block_id)
+    relu_name = conv_params.setdefault("relu_name", "activation_"+ block_id)
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
     kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
@@ -64,7 +64,7 @@ def _conv_bn_relu(**conv_params):
     return f
 
 
-def _bn_relu_conv(**conv_params):
+def _bn_relu_conv(block_id, **conv_params):
     """Helper to build a BN -> relu -> conv residual unit with full pre-activation
     function. This is the ResNet v2 scheme proposed in
     http://arxiv.org/pdf/1603.05027v2.pdf
@@ -73,9 +73,9 @@ def _bn_relu_conv(**conv_params):
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
     dilation_rate = conv_params.setdefault("dilation_rate", (1, 1))
-    conv_name = conv_params.setdefault("conv_name", None)
-    bn_name = conv_params.setdefault("bn_name", None)
-    relu_name = conv_params.setdefault("relu_name", None)
+    conv_name = conv_params.setdefault("conv_name", "conv2d_" + block_id)
+    bn_name = conv_params.setdefault("bn_name", "batch_normalization_"+ block_id)
+    relu_name = conv_params.setdefault("relu_name", "activation_"+ block_id)
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
     kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
@@ -125,7 +125,7 @@ def _shortcut(input_feature, residual, conv_name_base=None, bn_name_base=None):
     return add([shortcut, residual])
 
 
-def _residual_block(block_function, filters, blocks, stage,
+def _residual_block(block_id, block_function, filters, blocks, stage,
                     transition_strides=None, transition_dilation_rates=None,
                     dilation_rates=None, is_first_layer=False, dropout=None,
                     residual_unit=_bn_relu_conv):
@@ -147,12 +147,13 @@ def _residual_block(block_function, filters, blocks, stage,
     def f(x):
         for i in range(blocks):
             is_first_block = is_first_layer and i == 0
-            x = block_function(filters=filters, stage=stage, block=i,
+            x = block_function(block_id=block_id, filters=filters, stage=stage, block=i,
                                transition_strides=transition_strides[i],
                                dilation_rate=dilation_rates[i],
                                is_first_block_of_first_layer=is_first_block,
                                dropout=dropout,
                                residual_unit=residual_unit)(x)
+            block_id=block_id+2
         return x
 
     return f
@@ -171,7 +172,7 @@ def _block_name_base(stage, block):
     return conv_name_base, bn_name_base
 
 
-def basic_block(filters, stage, block, transition_strides=(1, 1),
+def basic_block(block_id, filters, stage, block, transition_strides=(1, 1),
                 dilation_rate=(1, 1), is_first_block_of_first_layer=False, dropout=None,
                 residual_unit=_bn_relu_conv):
     """Basic 3 X 3 convolution blocks for use on resnets with layers <= 34.
@@ -189,7 +190,7 @@ def basic_block(filters, stage, block, transition_strides=(1, 1),
                        kernel_regularizer=l2(1e-4),
                        name=conv_name_base + '2a')(input_features)
         else:
-            x = residual_unit(filters=filters, kernel_size=(3, 3),
+            x = residual_unit(block_id=block_id, filters=filters, kernel_size=(3, 3),
                               strides=transition_strides,
                               dilation_rate=dilation_rate,
                               conv_name_base=conv_name_base + '2a',
@@ -198,7 +199,7 @@ def basic_block(filters, stage, block, transition_strides=(1, 1),
         if dropout is not None:
             x = Dropout(dropout)(x)
 
-        x = residual_unit(filters=filters, kernel_size=(3, 3),
+        x = residual_unit(block_id=block_id+1, filters=filters, kernel_size=(3, 3),
                           conv_name_base=conv_name_base + '2b',
                           bn_name_base=bn_name_base + '2b')(x)
 
@@ -207,7 +208,7 @@ def basic_block(filters, stage, block, transition_strides=(1, 1),
     return f
 
 
-def bottleneck(filters, stage, block, transition_strides=(1, 1),
+def bottleneck(block_id, filters, stage, block, transition_strides=(1, 1),
                dilation_rate=(1, 1), is_first_block_of_first_layer=False, dropout=None,
                residual_unit=_bn_relu_conv):
     """Bottleneck architecture for > 34 layer resnet.
@@ -227,7 +228,7 @@ def bottleneck(filters, stage, block, transition_strides=(1, 1),
                        kernel_regularizer=l2(1e-4),
                        name=conv_name_base + '2a')(input_feature)
         else:
-            x = residual_unit(filters=filters, kernel_size=(1, 1),
+            x = residual_unit(block_id=block_id, filters=filters, kernel_size=(1, 1),
                               strides=transition_strides,
                               dilation_rate=dilation_rate,
                               conv_name_base=conv_name_base + '2a',
