@@ -153,6 +153,7 @@ def _residual_block(block_id, block_function, filters, blocks, stage,
                                is_first_block_of_first_layer=is_first_block,
                                dropout=dropout,
                                residual_unit=residual_unit)(x)
+            print('(',id, i, id + i*2, ')')
         return x
 
     return f
