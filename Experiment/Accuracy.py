@@ -40,9 +40,9 @@ class accuracy:
 
         def set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index):
             if index == 0: # fog node fails
-                fail_layers = layers_edge
-            elif index == 1: # edge node fails
                 fail_layers = layers_fog
+            elif index == 1: # edge node fails
+                fail_layers = layers_edge
             else: 
                 print("Error! wrong index for node failure:", index)
                 sys.exit()
@@ -71,8 +71,8 @@ class accuracy:
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            layers_edge = ["conv_5","conv_2","conv_3"] # conv_3 is the last one in the "recursion"
-            layers_fog = ["conv_10","conv_7","conv_8"] # conv_8 is the last one in the "recursion"
+            layers_edge = ["conv_6","conv_3","conv_4"] # conv_4 is the last one in the "recursion"
+            layers_fog = ["conv_11","conv_8","conv_9"] # conv_9 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)

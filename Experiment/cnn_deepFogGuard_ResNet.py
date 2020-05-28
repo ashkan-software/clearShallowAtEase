@@ -51,7 +51,6 @@ def define_deepFogGuard_CNN_ResNet(input_shape=None, classes=10, block='basic', 
     cloud_output = define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud_output, num_gpus)
-    model.summary()
     return model, parallel_model
 
 
