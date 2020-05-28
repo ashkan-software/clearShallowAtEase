@@ -143,17 +143,16 @@ def _residual_block(block_id, block_function, filters, blocks, stage,
         transition_strides = [(1, 1)] * blocks
     if dilation_rates is None:
         dilation_rates = [1] * blocks
-
+    id = block_id
     def f(x):
         for i in range(blocks):
             is_first_block = is_first_layer and i == 0
-            x = block_function(block_id=block_id, filters=filters, stage=stage, block=i,
+            x = block_function(block_id=id + i*2, filters=filters, stage=stage, block=i,
                                transition_strides=transition_strides[i],
                                dilation_rate=dilation_rates[i],
                                is_first_block_of_first_layer=is_first_block,
                                dropout=dropout,
                                residual_unit=residual_unit)(x)
-            block_id=block_id+2
         return x
 
     return f
