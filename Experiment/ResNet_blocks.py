@@ -45,9 +45,9 @@ def _conv_bn_relu(block_id, **conv_params):
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
     dilation_rate = conv_params.setdefault("dilation_rate", (1, 1))
-    conv_name = conv_params.setdefault("conv_name", "conv2d_" + str(block_id))
-    bn_name = conv_params.setdefault("bn_name", "batch_normalization_"+ str(block_id))
-    relu_name = conv_params.setdefault("relu_name", "activation_"+ str(block_id))
+    conv_name = conv_params.setdefault("conv_name", "conv_" + str(block_id))
+    bn_name = conv_params.setdefault("bn_name", "batch_norm_"+ str(block_id))
+    relu_name = conv_params.setdefault("relu_name", "activ_"+ str(block_id))
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
     kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
@@ -73,9 +73,9 @@ def _bn_relu_conv(block_id, **conv_params):
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
     dilation_rate = conv_params.setdefault("dilation_rate", (1, 1))
-    conv_name = conv_params.setdefault("conv_name", "conv2d_" + str(block_id))
-    bn_name = conv_params.setdefault("bn_name", "batch_normalization_"+ str(block_id))
-    relu_name = conv_params.setdefault("relu_name", "activation_"+ str(block_id))
+    conv_name = conv_params.setdefault("conv_name", "conv_" + str(block_id))
+    bn_name = conv_params.setdefault("bn_name", "batch_norm_"+ str(block_id))
+    relu_name = conv_params.setdefault("relu_name", "activ_"+ str(block_id))
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
     kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
@@ -153,7 +153,6 @@ def _residual_block(block_id, block_function, filters, blocks, stage,
                                is_first_block_of_first_layer=is_first_block,
                                dropout=dropout,
                                residual_unit=residual_unit)(x)
-            print('(',id, i, id + i*2, ')')
         return x
 
     return f
@@ -195,14 +194,14 @@ def basic_block(block_id, filters, stage, block, transition_strides=(1, 1),
                               dilation_rate=dilation_rate,
                               conv_name_base=conv_name_base + '2a',
                               bn_name_base=bn_name_base + '2a')(input_features)
-            print(block_id)
+
         if dropout is not None:
             x = Dropout(dropout)(x)
 
         x = residual_unit(block_id=block_id+1, filters=filters, kernel_size=(3, 3),
                           conv_name_base=conv_name_base + '2b',
                           bn_name_base=bn_name_base + '2b')(x)
-        print(block_id+1)
+
         return _shortcut(input_features, x)
 
     return f

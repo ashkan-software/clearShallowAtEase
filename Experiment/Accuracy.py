@@ -71,8 +71,8 @@ class accuracy:
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            layers_edge = ["conv2d_5","conv2d_2","conv2d_3"] # conv2d_3 is the last one in the "recursion"
-            layers_fog = ["conv2d_10","conv2d_7","conv2d_8"] # conv2d_3 is the last one in the "recursion"
+            layers_edge = ["conv_5","conv_2","conv_3"] # conv_3 is the last one in the "recursion"
+            layers_fog = ["conv_10","conv_7","conv_8"] # conv_8 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)
