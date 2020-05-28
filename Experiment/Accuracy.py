@@ -46,8 +46,8 @@ class accuracy:
             else: 
                 print("Error! wrong index for node failure:", index)
                 sys.exit()
-            for index, _ in enumerate(fail_layers):
-                set_weights_zero_CNN(model, fail_layers, index)
+            for i, _ in enumerate(fail_layers):
+                set_weights_zero_CNN(model, fail_layers, i)
 
         # input is image 
         if self.experiment_name == "Camera":

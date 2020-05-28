@@ -108,8 +108,6 @@ def _shortcut(input_feature, residual, conv_name_base=None, bn_name_base=None):
     # 1 X 1 conv if shape is different. Else identity.
     if stride_width > 1 or stride_height > 1 or not equal_channels:
         print('reshaping via a convolution...')
-        if conv_name_base is not None:
-            conv_name_base = conv_name_base + '1'
         shortcut = Conv2D(filters=residual_shape[CHANNEL_AXIS],
                           kernel_size=(1, 1),
                           strides=(stride_width, stride_height),
@@ -117,8 +115,6 @@ def _shortcut(input_feature, residual, conv_name_base=None, bn_name_base=None):
                           kernel_initializer="he_normal",
                           kernel_regularizer=l2(0.0001),
                           name=conv_name_base)(input_feature)
-        if bn_name_base is not None:
-            bn_name_base = bn_name_base + '1'
         shortcut = BatchNormalization(axis=CHANNEL_AXIS,
                                       name=bn_name_base)(shortcut)
 
@@ -202,7 +198,7 @@ def basic_block(block_id, filters, stage, block, transition_strides=(1, 1),
                           conv_name_base=conv_name_base + '2b',
                           bn_name_base=bn_name_base + '2b')(x)
 
-        return _shortcut(input_features, x)
+        return _shortcut(input_features, x, conv_name_base="skip_conv_"+str(block_id+2), bn_name_base="skip_bn_"+str(block_id+2))
 
     return f
 
@@ -236,18 +232,18 @@ def bottleneck(block_id, filters, stage, block, transition_strides=(1, 1),
         if dropout is not None:
             x = Dropout(dropout)(x)
 
-        x = residual_unit(filters=filters, kernel_size=(3, 3),
+        x = residual_unit(block_id=block_id+1, filters=filters, kernel_size=(3, 3),
                           conv_name_base=conv_name_base + '2b',
                           bn_name_base=bn_name_base + '2b')(x)
 
         if dropout is not None:
             x = Dropout(dropout)(x)
 
-        x = residual_unit(filters=filters * 4, kernel_size=(1, 1),
+        x = residual_unit(block_id=block_id+1, filters=filters * 4, kernel_size=(1, 1),
                           conv_name_base=conv_name_base + '2c',
                           bn_name_base=bn_name_base + '2c')(x)
 
-        return _shortcut(input_feature, x)
+        return _shortcut(input_feature, x, conv_name_base="skip_conv_"+str(block_id+2), bn_name_base="skip_bn_"+str(block_id+2))
 
     return f
 
