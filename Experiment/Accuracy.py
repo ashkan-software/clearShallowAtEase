@@ -20,8 +20,8 @@ class accuracy:
         ### Returns
             return a boolean whether the model failed was a cnn or not
         """
-        def set_weights_zero_MLP(model, nodes, index):
-            layer_name = nodes[index]
+        def set_weights_zero_MLP(model, layers, index):
+            layer_name = layers[index]
             layer = model.get_layer(name=layer_name)
             layer_weights = layer.get_weights()
             # make new weights for the connections
@@ -30,17 +30,28 @@ class accuracy:
             new_bias_weights = np.zeros(layer_weights[1].shape)
             layer.set_weights([new_weights,new_bias_weights])
 
-        def set_weights_zero_CNN(model, nodes, index):
-            layer_name = nodes[index]
+        def set_weights_zero_CNN(model, layers, index):
+            layer_name = layers[index]
             layer = model.get_layer(name=layer_name)
             layer_weights = layer.get_weights()
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
             layer.set_weights([new_weights])
-            
+
+        def set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index):
+            if index == 0: # fog node fails
+                fail_layers = layers_edge
+            elif index == 1: # edge node fails
+                fail_layers = layers_fog
+            else: 
+                print("Error! wrong index for node failure:", index)
+                sys.exit()
+            for index, _ in enumerate(fail_layers):
+                set_weights_zero_CNN(model, fail_layers, index)
+
         # input is image 
         if self.experiment_name == "Camera":
-            nodes = [
+            layers = [
                 "fog1_output_layer",
                 "fog2_output_layer",
                 "fog3_output_layer",
@@ -52,25 +63,25 @@ class accuracy:
                 ]
             for index, node in enumerate(node_failure_combination):
                 if node == 0: # if dead
-                    set_weights_zero_MLP(model, nodes, index)
+                    set_weights_zero_MLP(model, layers, index)
             
         elif self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
-            nodes = ["conv_pw_8","conv_pw_3"]
+            layers = ["conv_pw_8","conv_pw_3"]
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
-                    set_weights_zero_CNN(model, nodes, index)
+                    set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            layers_edge = ["conv2d_7","conv2d_3","conv2d_4"]
-            layers_fog = ["conv2d_14","conv2d_10","conv2d_11"]
+            layers_edge = ["conv2d_5","conv2d_2","conv2d_3"] # conv2d_3 is the last one in the "recursion"
+            layers_fog = ["conv2d_10","conv2d_7","conv2d_8"] # conv2d_3 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
-                    set_weights_zero_CNN(model, nodes, index)
+                    set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)
         elif self.experiment_name == "Health":              
-            nodes = ["fog1_output_layer","fog2_output_layer","edge_output_layer"]
+            layers = ["fog1_output_layer","fog2_output_layer","edge_output_layer"]
             for index,node in enumerate(node_failure_combination):
                 # node failed
                 if node == 0:
-                    set_weights_zero_MLP(model, nodes, index)
+                    set_weights_zero_MLP(model, layers, index)
         elif self.experiment_name is not "Imagenet":
             print("Error! Please specify the correct experiment name")
             sys.exit()
