@@ -51,15 +51,16 @@ def define_deepFogGuard_CNN_ResNet(input_shape=None, classes=10, block='basic', 
     cloud_output = define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, repetitions[2], repetitions[3], transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud_output, num_gpus)
+    model.summary()
     return model, parallel_model
 
 
 def define_cnn_deepFogGuard_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides):
     iot_output = define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides)
-    # need to go from (112,112,64) to (56,56,128) ????
+    # need to go from (112,112,64) to (56,56,64) ????
     # 1x1 conv2d is used to change the filter size (from 64 to 128). Stride is 2 for 112->56
     # cifar-10
-    skip_iotfog = layers.Conv2D(128,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
+    skip_iotfog = layers.Conv2D(64,(1,1),strides = 4, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
     return iot_output, skip_iotfog
 
 def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe = None, edge_failure_lambda = None):
@@ -68,9 +69,9 @@ def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation
     edge_output, filters = define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides)
     if edge_failure_lambda != None:
          edge_output = edge_failure_lambda(edge_output)
-    # need to go from (56,56,64) to (28,28,256) ????
+    # need to go from (56,56,64) to (28,28,128) ????
     # 1x1 conv2d is used to change the filter size (from 64 to 256).  Stride is 2 for 56->28
-    skip_edgecloud = layers.Conv2D(256,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
+    skip_edgecloud = layers.Conv2D(128,(1,1),strides = 2, use_bias = False, name = "skip_hyperconnection_edgecloud")(edge_output)
     return edge_output, skip_edgecloud, filters
    
 

@@ -49,10 +49,10 @@ def init_common_experiment_params():
         horizontal_flip=True,
     )
     reliability_settings = [
-        [1,1,1],
-        [.99,.96,.92],
-        [.95,.91,.87],
-        [.85,.8,.78],
+        [1,1],
+        [.98,.96],
+        [.95,.90],
+        [.85,.80],
     ]
     strides = (1,1)
     num_iterations = 1
