@@ -96,6 +96,7 @@ def define_vanilla_CNN_MobileNet(input_shape=None,
     cloud = define_cnn_architecture_cloud(cloud,alpha,depth_multiplier,classes,include_top,pooling, dropout)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud, num_gpus)
+    model.summary()
     return model, parallel_model
 
 def define_cnn_architecture_IoT(img_input,alpha, strides = (2,2)):

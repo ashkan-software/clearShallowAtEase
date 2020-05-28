@@ -60,6 +60,7 @@ def define_deepFogGuard_CNN_MobileNet(input_shape=None,
     cloud_output = define_cnn_deepFogGuard_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
 
     model, parallel_model = compile_keras_parallel_model(img_input, cloud_output, num_gpus)
+    model.summary()
     return model, parallel_model
 
 def define_cnn_deepFogGuard_architecture_IoT(input_shape, alpha, img_input, strides = (2,2)):
