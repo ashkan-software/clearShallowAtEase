@@ -135,22 +135,22 @@ def init_model(input_shape, classes, include_top, block, residual_unit, activati
     return input_shape, block_fn, residual_unit                              
 
 def define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides):
-    return _conv_bn_relu(block_id=1, filters=initial_filters, kernel_size=initial_kernel_size,
+    return _conv_bn_relu(block_id=2, filters=initial_filters, kernel_size=initial_kernel_size,
                       strides=initial_strides)(img_input)
 
 def define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides):
     if initial_pooling == 'max':
         edge = layers.MaxPooling2D(pool_size=(3, 3), strides=initial_strides, padding="same")(iot_output)
-    edge_output, filters = _helper_define_conv_blocks(edge, 0, 2, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    edge_output, filters = _helper_define_conv_blocks(edge, 0, 3, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     return edge_output, filters
 
 def define_cnn_architecture_fog(edge_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit):
-    fog_output, filters = _helper_define_conv_blocks(edge_output, 1, 6, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    fog_output, filters = _helper_define_conv_blocks(edge_output, 1, 7, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     return fog_output, filters
 
 def define_cnn_architecture_cloud(fog_output, r1, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling):
-    cloud, filters = _helper_define_conv_blocks(fog_output, 2, 10, r1, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
-    cloud, filters = _helper_define_conv_blocks(cloud, 3, 14, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    cloud, filters = _helper_define_conv_blocks(fog_output, 2, 11, r1, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    cloud, filters = _helper_define_conv_blocks(cloud, 3, 15, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
       # Last activation
     cloud = _bn_relu(cloud)
     # Classifier block
