@@ -195,14 +195,14 @@ def basic_block(block_id, filters, stage, block, transition_strides=(1, 1),
                               dilation_rate=dilation_rate,
                               conv_name_base=conv_name_base + '2a',
                               bn_name_base=bn_name_base + '2a')(input_features)
-
+            print(block_id)
         if dropout is not None:
             x = Dropout(dropout)(x)
 
         x = residual_unit(block_id=block_id+1, filters=filters, kernel_size=(3, 3),
                           conv_name_base=conv_name_base + '2b',
                           bn_name_base=bn_name_base + '2b')(x)
-
+        print(block_id+1)
         return _shortcut(input_features, x)
 
     return f
