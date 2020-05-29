@@ -111,7 +111,7 @@ if __name__ == "__main__":
     load_for_inference = False
     train_steps_per_epoch = math.ceil(len(training_data) / batch_size)
     val_steps_per_epoch = math.ceil(len(val_data) / batch_size)
-
+    
     make_results_folder()
     output_name = 'results/cifar_resnet_skiphyperconnection_sensitivity_results.txt'
     output_list = []

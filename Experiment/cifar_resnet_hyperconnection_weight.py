@@ -53,7 +53,8 @@ if __name__ == "__main__":
 
     model_name = "ResiliNet Hyperconnection Weight"
     output, weight_schemes = make_output_dictionary_hyperconnection_weight(model_name, reliability_settings, num_iterations)
-    
+    considered_weight_schemes = [1,2,3,4]
+
     no_information_flow_map = make_no_information_flow_map("ResNet", default_skip_hyperconnection_config)
 
     load_for_inference = False
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     default_reliability_setting = [1,1]
     for iteration in range(1,num_iterations+1):
         print("iteration:",iteration)
-        for weight_scheme in weight_schemes:
+        for weight_scheme in considered_weight_schemes:
             if weight_scheme == 2 or weight_scheme == 3: # if the weight scheme depends on reliability
                 for reliability_setting in reliability_settings:
                     model = define_and_train(iteration, model_name, load_for_inference, reliability_setting, weight_scheme, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus)
