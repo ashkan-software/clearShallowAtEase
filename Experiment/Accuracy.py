@@ -36,7 +36,9 @@ class accuracy:
             layer_weights = layer.get_weights()
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
-            layer.set_weights([new_weights])
+            new_bias_weights = np.zeros(layer_weights[1].shape)
+            layer.set_weights([new_weights,new_bias_weights])
+            # layer.set_weights([new_weights])
 
         def set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index):
             if index == 0: # fog node fails
