@@ -167,8 +167,8 @@ def compile_keras_parallel_model(input, cloud_output, num_gpus, name='ANRL_mobil
     if num_gpus > 1:
         parallel_model = multi_gpu_model(model, gpus = num_gpus)
         # sgd_optimizer = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-        adam_optimizaer = optimizers.Adam(lr=0.001)
-        model.compile(loss='sparse_categorical_crossentropy', optimizer=adam_optimizaer, metrics=['accuracy'])
+        adam_optimizer = optimizers.Adam(lr=0.001)
+        model.compile(loss='sparse_categorical_crossentropy', optimizer=adam_optimizer, metrics=['accuracy'])
         parallel_model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     else:
         model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])

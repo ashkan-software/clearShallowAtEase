@@ -36,9 +36,9 @@ class accuracy:
             layer_weights = layer.get_weights()
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
+             # make new weights for biases
             new_bias_weights = np.zeros(layer_weights[1].shape)
             layer.set_weights([new_weights,new_bias_weights])
-            # layer.set_weights([new_weights])
 
         def set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index):
             if index == 0: # fog node fails
@@ -73,8 +73,8 @@ class accuracy:
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            layers_edge = ["conv_6","conv_3","conv_4"] # conv_4 is the last one in the "recursion"
-            layers_fog = ["conv_11","conv_8","conv_9"] # conv_9 is the last one in the "recursion"
+            layers_edge = ["conv_6","conv_3","skip_conv_4"] # skip_conv_4 is the last one in the "recursion"
+            layers_fog = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)
