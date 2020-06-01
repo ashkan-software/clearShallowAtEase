@@ -160,7 +160,7 @@ def define_cnn_architecture_cloud(fog_output, r1, r2, transition_dilation_rate, 
         cloud, filters = _helper_define_conv_blocks(fog_output, 2, 12, r1, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
         cloud, filters = _helper_define_conv_blocks(cloud, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     else:  # PARTITION_SETING == 2
-        cloud, filters = _helper_define_conv_blocks(cloud, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+        cloud, filters = _helper_define_conv_blocks(fog_output, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
       # Last activation
     cloud = _bn_relu(cloud)
     # Classifier block
