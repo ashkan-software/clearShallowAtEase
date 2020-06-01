@@ -2,6 +2,8 @@ from keras.models import Sequential
 from keras.layers import Dense,Input,Lambda, Activation
 from keras.models import Model
 
+PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->2->3->4. ARCHITECTURE TWO: 2->3->2->3. 
+
 def define_vanilla_model_MLP(num_vars,num_classes,hidden_units):
     """Define a normal neural network.
    ### Naming Convention
@@ -40,24 +42,42 @@ def define_vanilla_model_MLP(num_vars,num_classes,hidden_units):
     return model
 
 def define_MLP_architecture_edge(img_input,hidden_units):
-    edge_output = Dense(units=hidden_units,name="edge_output_layer",activation='relu')(img_input)
+    if PARTITION_SETING == 1:
+        edge_output = Dense(units=hidden_units,name="edge_output_layer",activation='relu')(img_input)
+    else: # PARTITION_SETING == 2
+        edge = Dense(units=hidden_units,name="edge_input_layer",activation='relu')(img_input)
+        edge_output = Dense(units=hidden_units,name="edge_output_layer",activation='relu')(edge)
     return edge_output
 
 def define_MLP_architecture_fog2(fog2_input,hidden_units):
-    fog2 = Dense(units=hidden_units,name="fog2_input_layer",activation='relu')(fog2_input)
-    fog2_output = Dense(units=hidden_units,name="fog2_output_layer",activation='relu')(fog2)
+    if PARTITION_SETING == 1:
+        fog2 = Dense(units=hidden_units,name="fog2_input_layer",activation='relu')(fog2_input)
+        fog2_output = Dense(units=hidden_units,name="fog2_output_layer",activation='relu')(fog2)
+    else: # PARTITION_SETING == 2
+        fog2 = Dense(units=hidden_units,name="fog2_input_layer",activation='relu')(fog2_input)
+        fog2 = Dense(units=hidden_units,name="fog2_layer_1",activation='relu')(fog2)
+        fog2_output = Dense(units=hidden_units,name="fog2_output_layer",activation='relu')(fog2)
     return fog2_output
 
 def define_MLP_architecture_fog1(fog1_input,hidden_units):
-    fog1 = Dense(units=hidden_units,name="fog1_input_layer",activation='relu')(fog1_input)
-    fog1 = Dense(units=hidden_units,name="fog1_layer_1",activation='relu')(fog1)
-    fog1_output = Dense(units=hidden_units,name="fog1_output_layer",activation='relu')(fog1)
+    if PARTITION_SETING == 1:
+        fog1 = Dense(units=hidden_units,name="fog1_input_layer",activation='relu')(fog1_input)
+        fog1 = Dense(units=hidden_units,name="fog1_layer_1",activation='relu')(fog1)
+        fog1_output = Dense(units=hidden_units,name="fog1_output_layer",activation='relu')(fog1)
+    else: # PARTITION_SETING == 2
+        fog1 = Dense(units=hidden_units,name="fog1_input_layer",activation='relu')(fog1_input)
+        fog1_output = Dense(units=hidden_units,name="fog1_output_layer",activation='relu')(fog1)
     return fog1_output
 
 def define_MLP_architecture_cloud(cloud_input, hidden_units, num_classes):
-    cloud = Dense(units=hidden_units,name="cloud_input_layer",activation='relu')(cloud_input)
-    cloud = Dense(units=hidden_units,name="cloud_layer_1",activation='relu')(cloud)
-    cloud = Dense(units=hidden_units,name="cloud_layer_2",activation='relu')(cloud)
-    cloud = Dense(units=hidden_units,name="cloud_layer_3",activation='relu')(cloud)
+    if PARTITION_SETING == 1:
+        cloud = Dense(units=hidden_units,name="cloud_input_layer",activation='relu')(cloud_input)
+        cloud = Dense(units=hidden_units,name="cloud_layer_1",activation='relu')(cloud)
+        cloud = Dense(units=hidden_units,name="cloud_layer_2",activation='relu')(cloud)
+        cloud = Dense(units=hidden_units,name="cloud_layer_3",activation='relu')(cloud)
+    else: # PARTITION_SETING == 2
+        cloud = Dense(units=hidden_units,name="cloud_input_layer",activation='relu')(cloud_input)
+        cloud = Dense(units=hidden_units,name="cloud_layer_1",activation='relu')(cloud)
+        cloud = Dense(units=hidden_units,name="cloud_layer_2",activation='relu')(cloud)
     cloud_output = Dense(units=num_classes,activation='softmax',name = "output")(cloud)
     return cloud_output

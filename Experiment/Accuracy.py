@@ -4,6 +4,7 @@ import keras.backend as K
 import numpy as np
 import sys
 from Experiment.common_exp_methods import convertBinaryToList
+from Experiment.cnn_Vanilla_ResNet import PARTITION_SETING
 
 modelAccuracyDict = dict()
 
@@ -73,8 +74,12 @@ class accuracy:
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            layers_edge = ["conv_6","conv_3","skip_conv_4"] # skip_conv_4 is the last one in the "recursion"
-            layers_fog = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
+            if PARTITION_SETING == 1:
+                layers_edge = ["conv_6","conv_3","skip_conv_4"] # skip_conv_4 is the last one in the "recursion"
+                layers_fog = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
+            else: # PARTITION_SETING == 2
+                layers_edge = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
+                layers_fog = ["conv_16","conv_13","skip_conv_14"] # skip_conv_14 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)

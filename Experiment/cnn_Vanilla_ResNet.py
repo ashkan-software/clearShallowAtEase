@@ -12,8 +12,8 @@ from keras_applications.imagenet_utils import _obtain_input_shape
 from Experiment.ResNet_blocks import _handle_dim_ordering, basic_block, _string_to_function, bottleneck, _bn_relu_conv, _conv_bn_relu, _residual_block, _bn_relu
 from Experiment.common_exp_methods import compile_keras_parallel_model
 
-BASE_WEIGHT_PATH = ('https://github.com/fchollet/deep-learning-models/'
-                    'releases/download/v0.6/')
+PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->4->4->9. ARCHITECTURE TWO: 1->8->4->5. 
+
 def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='basic', residual_unit='v2',
                             repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                             input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
@@ -141,16 +141,26 @@ def define_cnn_architecture_IoT(img_input,initial_filters, initial_kernel_size, 
 def define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides):
     if initial_pooling == 'max':
         edge = layers.MaxPooling2D(pool_size=(3, 3), strides=initial_strides, padding="same")(iot_output)
-    edge_output, filters = _helper_define_conv_blocks(edge, 0, 2, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    if PARTITION_SETING == 1:
+        edge_output, filters = _helper_define_conv_blocks(edge, 0, 2, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    else:  # PARTITION_SETING == 2
+        edge, filters = _helper_define_conv_blocks(edge, 0, 2, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+        edge_output, filters = _helper_define_conv_blocks(edge, 1, 7, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     return edge_output, filters
 
 def define_cnn_architecture_fog(edge_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit):
-    fog_output, filters = _helper_define_conv_blocks(edge_output, 1, 7, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    if PARTITION_SETING == 1:
+        fog_output, filters = _helper_define_conv_blocks(edge_output, 1, 7, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    else:  # PARTITION_SETING == 2
+        fog_output, filters = _helper_define_conv_blocks(edge_output, 2, 12, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
     return fog_output, filters
 
 def define_cnn_architecture_cloud(fog_output, r1, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit, input_shape, classes, activation, include_top, top, final_pooling):
-    cloud, filters = _helper_define_conv_blocks(fog_output, 2, 12, r1, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
-    cloud, filters = _helper_define_conv_blocks(cloud, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    if PARTITION_SETING == 1:
+        cloud, filters = _helper_define_conv_blocks(fog_output, 2, 12, r1, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+        cloud, filters = _helper_define_conv_blocks(cloud, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
+    else:  # PARTITION_SETING == 2
+        cloud, filters = _helper_define_conv_blocks(cloud, 3, 17, r2, transition_dilation_rate, block_fn, filters, dropout, residual_unit)
       # Last activation
     cloud = _bn_relu(cloud)
     # Classifier block
