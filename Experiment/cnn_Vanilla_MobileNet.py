@@ -11,8 +11,8 @@ from keras_applications.imagenet_utils import _obtain_input_shape
 from Experiment.MobileNet_blocks import _conv_block, _depthwise_conv_block
 from Experiment.common_exp_methods import compile_keras_parallel_model
 
-BASE_WEIGHT_PATH = ('https://github.com/fchollet/deep-learning-models/'
-                    'releases/download/v0.6/')
+PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->3->5->5. ARCHITECTURE TWO: 2->2->4->6. 
+
 def define_vanilla_CNN_MobileNet(input_shape=None,
                                 alpha=1.0,
                                 depth_multiplier=1,
@@ -99,34 +99,61 @@ def define_vanilla_CNN_MobileNet(input_shape=None,
     return model, parallel_model
 
 def define_cnn_architecture_IoT(img_input,alpha, strides = (2,2)):
-    return  _conv_block(img_input, 32, alpha, strides=strides)
+    if PARTITION_SETING == 1:
+        return  _conv_block(img_input, 32, alpha, strides=strides)
+    else:  # PARTITION_SETING == 2
+        iot =  _conv_block(img_input, 32, alpha, strides=strides)
+        return _depthwise_conv_block(iot, 64, alpha, depth_multiplier=1, block_id=1)
 
 def define_cnn_architecture_edge(iot_output,alpha, depth_multiplier, strides =(2,2)):
-    edge = _depthwise_conv_block(iot_output, 64, alpha, depth_multiplier, block_id=1)
-    edge = _depthwise_conv_block(edge, 128, alpha, depth_multiplier,
-                              strides=strides, block_id=2)
-    edge_output = _depthwise_conv_block(edge, 128, alpha, depth_multiplier, block_id=3)
+    if PARTITION_SETING == 1:
+        edge = _depthwise_conv_block(iot_output, 64, alpha, depth_multiplier, block_id=1)
+        edge = _depthwise_conv_block(edge, 128, alpha, depth_multiplier,
+                                strides=strides, block_id=2)
+        edge_output = _depthwise_conv_block(edge, 128, alpha, depth_multiplier, block_id=3)
+    else:  # PARTITION_SETING == 2
+        edge = _depthwise_conv_block(iot_output, 128, alpha, depth_multiplier,
+                                strides=strides, block_id=2)
+        edge_output = _depthwise_conv_block(edge, 128, alpha, depth_multiplier, block_id=3)
     return edge_output
 
 def define_cnn_architecture_fog(edge_output,alpha, depth_multiplier):
-    fog = _depthwise_conv_block(edge_output, 256, alpha, depth_multiplier,
-                          strides=(2, 2), block_id=4)
-    fog = _depthwise_conv_block(fog, 256, alpha, depth_multiplier, block_id=5)
-    fog = _depthwise_conv_block(fog, 512, alpha, depth_multiplier,
-                              strides=(2, 2), block_id=6)
-    fog = _depthwise_conv_block(fog, 512, alpha, depth_multiplier, block_id=7)
-    fog_output = _depthwise_conv_block(fog, 512, alpha, depth_multiplier, block_id=8)
+    if PARTITION_SETING == 1:
+        fog = _depthwise_conv_block(edge_output, 256, alpha, depth_multiplier,
+                            strides=(2, 2), block_id=4)
+        fog = _depthwise_conv_block(fog, 256, alpha, depth_multiplier, block_id=5)
+        fog = _depthwise_conv_block(fog, 512, alpha, depth_multiplier,
+                                strides=(2, 2), block_id=6)
+        fog = _depthwise_conv_block(fog, 512, alpha, depth_multiplier, block_id=7)
+        fog_output = _depthwise_conv_block(fog, 512, alpha, depth_multiplier, block_id=8)
+    else:  # PARTITION_SETING == 2
+        fog = _depthwise_conv_block(edge_output, 256, alpha, depth_multiplier,
+                            strides=(2, 2), block_id=4)
+        fog = _depthwise_conv_block(fog, 256, alpha, depth_multiplier, block_id=5)
+        fog = _depthwise_conv_block(fog, 512, alpha, depth_multiplier,
+                                strides=(2, 2), block_id=6)
+        fog_output = _depthwise_conv_block(fog, 512, alpha, depth_multiplier, block_id=7)
     return fog_output
 
 def define_cnn_architecture_cloud(fog_output,alpha,depth_multiplier, classes,include_top,pooling, dropout=1e-3):
-    cloud = _depthwise_conv_block(fog_output, 512, alpha, depth_multiplier, block_id=9)
-    cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=10)
-    cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=11)
+    if PARTITION_SETING == 1:
+        cloud = _depthwise_conv_block(fog_output, 512, alpha, depth_multiplier, block_id=9)
+        cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=10)
+        cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=11)
 
-    cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier,
-                              strides=(2, 2), block_id=12)
-    cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier, block_id=13)
+        cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier,
+                                strides=(2, 2), block_id=12)
+        cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier, block_id=13)
+    else:  # PARTITION_SETING == 2
+        cloud = _depthwise_conv_block(fog_output, 512, alpha, depth_multiplier, block_id=8)
+        cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=9)
+        cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=10)
+        cloud = _depthwise_conv_block(cloud, 512, alpha, depth_multiplier, block_id=11)
 
+        cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier,
+                                strides=(2, 2), block_id=12)
+        cloud = _depthwise_conv_block(cloud, 1024, alpha, depth_multiplier, block_id=13)
+        
     if include_top:
         if K.image_data_format() == 'channels_first':
             shape = (int(1024 * alpha), 1, 1)
