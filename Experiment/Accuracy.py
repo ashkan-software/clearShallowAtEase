@@ -107,7 +107,7 @@ class accuracy:
                                                 ):
         """runs through all node failure combinations and calculates the accuracy (and weight) of that particular node failure combination
         ### Arguments
-            reliability_setting (list): List of the reliability of all nodes, ordered from edge to fog node
+            reliability_setting (list): List of the reliability of all nodes, ordered from fog to edge node
             numNodes (int): number of physical nodes
             model (Model): Keras model
             output_list (list): list that contains string output of the experiment

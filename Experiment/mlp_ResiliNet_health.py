@@ -73,9 +73,9 @@ def define_ResiliNet_MLP(num_vars,
     return model
 
 def MLP_failout_definitions(failout_survival_setting):
-    edge_reliability = failout_survival_setting[0]
+    fog1_reliability = failout_survival_setting[0]
     fog2_reliability = failout_survival_setting[1]
-    fog1_reliability = failout_survival_setting[2]
+    edge_reliability = failout_survival_setting[2]
 
     edge_failure_lambda = Failout(edge_reliability)
     fog2_failure_lambda = Failout(fog2_reliability)

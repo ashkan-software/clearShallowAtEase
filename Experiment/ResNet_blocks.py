@@ -107,7 +107,7 @@ def _shortcut(input_feature, residual, conv_name_base=None, bn_name_base=None):
     shortcut = input_feature
     # 1 X 1 conv if shape is different. Else identity.
     if stride_width > 1 or stride_height > 1 or not equal_channels:
-        print('reshaping via a convolution...')
+        # print('reshaping via a convolution...')
         shortcut = Conv2D(filters=residual_shape[CHANNEL_AXIS],
                           kernel_size=(1, 1),
                           strides=(stride_width, stride_height),

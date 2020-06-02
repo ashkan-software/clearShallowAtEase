@@ -66,8 +66,8 @@ def define_hyperconnection_weight_lambda_layers(hyperconnection_weight_IoTe, hyp
     return multiply_hyperconnection_weight_layer_IoTe, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef, multiply_hyperconnection_weight_layer_ec, multiply_hyperconnection_weight_layer_fc
 
 def cnn_failout_definitions(failout_survival_setting):
-    edge_reliability = failout_survival_setting[0]
-    fog_reliability = failout_survival_setting[1]
+    fog_reliability = failout_survival_setting[0]
+    edge_reliability = failout_survival_setting[1]
     
     edge_failure_lambda = Failout(edge_reliability)
     fog_failure_lambda = Failout(fog_reliability)
