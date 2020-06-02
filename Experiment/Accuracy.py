@@ -38,8 +38,11 @@ class accuracy:
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
              # make new weights for biases
-            new_bias_weights = np.zeros(layer_weights[1].shape)
-            layer.set_weights([new_weights,new_bias_weights])
+            if self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
+                layer.set_weights([new_weights])
+            else: # self.experiment_name == "ResNet":
+                new_bias_weights = np.zeros(layer_weights[1].shape)
+                layer.set_weights([new_weights,new_bias_weights])
 
         def set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index):
             if index == 0: # fog node fails
