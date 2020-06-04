@@ -57,12 +57,12 @@ class accuracy:
         
         def set_failed_Tensors_health(model, index, failed):
             # if failed = 0, the node has not failed. if failed = 1, it has failed.
-            if index == 0:
-                model.node_failure.fog1_failed.assign(K.variable(failed))
-            if index == 1:
-                model.node_failure.fog2_failed.assign(K.variable(failed))
-            if index == 2:
-                model.node_failure.edge_failed.assign(K.variable(failed))
+            if index == 0: # fog1
+                model.node_failure.cloud_mux.has_failed = K.variable(failed)
+            if index == 1: # fog2
+                model.node_failure.fog1_mux.has_failed = K.variable(failed)
+            if index == 2: #edge
+                model.node_failure.fog2_mux.has_failed = K.variable(failed)
 
         # input is image 
         if self.experiment_name == "Camera":
