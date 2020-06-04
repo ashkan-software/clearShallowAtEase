@@ -6,7 +6,7 @@ import keras.backend as K
 import math
 import os 
 from Experiment.cnn_deepFogGuard_ResNet import define_deepFogGuard_CNN_ResNet
-from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet
+from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet, MUX_ADDS
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods import average, make_results_folder, make_output_dictionary_hyperconnection_weight, write_n_upload
 from Experiment.common_exp_methods_CNN_cifar import init_data, init_common_experiment_params, get_model_weights_CNN_cifar
@@ -28,7 +28,8 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
                                     hyperconnection_weights_scheme = weight_scheme,
                                     num_gpus = num_gpus)
     else: # model_name is "ResiliNet Hyperconnection Weight"
-        model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_resnet_hyperconnection_ResiliNet.h5'
+        mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+        model_file = 'models/' + str(iteration) + "_" +mux_adds_str+ str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_resnet_hyperconnection_ResiliNet.h5'
         model, parallel_model = define_ResiliNet_CNN_ResNet(input_shape=input_shape, classes=classes, block='basic', residual_unit='v2',
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
@@ -61,7 +62,8 @@ if __name__ == "__main__":
     val_steps_per_epoch = math.ceil(len(val_data) / batch_size)
     
     make_results_folder()
-    output_name = 'results/cifar_resnet_hyperconnection_weight_results.txt'
+    mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+    output_name = 'results/cifar_resnet_hyperconnection_weight_results'+mux_adds_str+'.txt'
     output_list = []
     default_reliability_setting = [1,1]
     for iteration in range(1,num_iterations+1):

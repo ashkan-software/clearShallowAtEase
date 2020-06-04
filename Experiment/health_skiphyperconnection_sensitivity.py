@@ -1,6 +1,6 @@
 
 from Experiment.mlp_deepFogGuard_health import define_deepFogGuard_MLP
-from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.common_exp_methods_MLP_health import init_data, init_common_experiment_params, get_model_weights_MLP_health
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods import average, convert_to_string, write_n_upload, make_results_folder
@@ -77,8 +77,9 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
         model = define_deepFogGuard_MLP(num_vars,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
         model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'health_skiphyperconnection_sensitivity_deepFogGuard.h5'
     else: # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
+        mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(num_vars,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
-        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'health_skiphyperconnection_sensitivity_ResiliNet.h5'
+        model_file = 'models/' + str(iteration) + " " + mux_adds_str + str(skip_hyperconnection_configuration) + " " + 'health_skiphyperconnection_sensitivity_ResiliNet.h5'
     get_model_weights_MLP_health(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, verbose)
     return model
 
@@ -111,7 +112,8 @@ if __name__ == "__main__":
         no_information_flow_map[tuple(skip_hyperconnection_configuration)] = make_no_information_flow_map("Health", skip_hyperconnection_configuration)
     
     load_for_inference = False
-    output_name = 'results/health_skiphyperconnection_sensitivity.txt'
+    mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+    output_name = 'results/health_skiphyperconnection_sensitivity'+mux_adds_str+'.txt'
     
     verbose = 2
     # keep track of output so that output is in order

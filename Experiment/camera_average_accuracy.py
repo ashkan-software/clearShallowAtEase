@@ -1,5 +1,5 @@
 
-from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_Vanilla_camera import define_vanilla_model_MLP
 from Experiment.Accuracy import accuracy
@@ -18,8 +18,9 @@ from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_conf
 def define_and_train(iteration, model_name, load_for_inference,train_data, train_labels, val_data, val_labels, input_shape, num_classes, hidden_units, verbose, batch_size, epochs):
     # ResiliNet
     if model_name == "ResiliNet":
+        mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units)
-        model_file = "models/" + "Camera" + str(iteration) + 'average_accuracy_ResiliNet.h5'
+        model_file = "models/" + "Camera" + str(iteration)+mux_adds_str + 'average_accuracy_ResiliNet.h5'
     # deepFogGuard
     if model_name == "deepFogGuard":
         model = define_deepFogGuard_MLP(input_shape, num_classes, hidden_units)
@@ -54,7 +55,8 @@ if __name__ == "__main__":
     load_for_inference = False
 
     # file name with the experiments accuracy output
-    output_name = "results/camera_average_accuracy.txt"
+    mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+    output_name = "results/camera_average_accuracy"+mux_adds_str+".txt"
     verbose = 2
 
     # keep track of output so that output is in order

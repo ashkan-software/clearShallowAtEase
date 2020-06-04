@@ -1,6 +1,6 @@
 
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
-from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.common_exp_methods_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
 from Experiment.Accuracy import accuracy
 from Experiment.common_exp_methods import average, convert_to_string, write_n_upload, make_results_folder
@@ -77,8 +77,9 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
         model = define_deepFogGuard_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
         model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_deepFogGuard.h5'
     else: # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
+        mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
-        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_ResiliNet.h5'
+        model_file = 'models/' + str(iteration) + " "+mux_adds_str + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_ResiliNet.h5'
     get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, verbose)
     return model
 
@@ -112,7 +113,8 @@ if __name__ == "__main__":
     
     default_reliability_setting = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
     load_for_inference = False
-    output_name = 'results/camera_skiphyperconnection_sensitivity.txt'
+    mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+    output_name = 'results/camera_skiphyperconnection_sensitivity'+mux_adds_str+'.txt'
     
     verbose = 2
     # keep track of output so that output is in order

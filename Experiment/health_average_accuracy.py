@@ -1,5 +1,5 @@
 
-from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.mlp_deepFogGuard_health import define_deepFogGuard_MLP
 from Experiment.mlp_Vanilla_health import define_vanilla_model_MLP
 from Experiment.Accuracy import accuracy
@@ -16,8 +16,9 @@ from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_conf
 def define_and_train(iteration, model_name, load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
     # ResiliNet
     if model_name == "ResiliNet":
+        mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(num_vars,num_classes,hidden_units)
-        model_file = 'models/' + "Health" + str(iteration) + 'average_accuracy_ResiliNet.h5'
+        model_file = 'models/' + "Health" + str(iteration) + mux_adds_str + 'average_accuracy_ResiliNet.h5'
     # deepFogGuard
     if model_name == "deepFogGuard":
         model = define_deepFogGuard_MLP(num_vars, num_classes, hidden_units)
@@ -52,7 +53,8 @@ if __name__ == "__main__":
     load_for_inference = False
 
     # file name with the experiments accuracy output
-    output_name = "results/health_average_accuracy.txt"
+    mux_adds_str = "mux_adds" if MUX_ADDS else "" 
+    output_name = "results/health_average_accuracy"+mux_adds_str+".txt"
     
     verbose = 2
     
