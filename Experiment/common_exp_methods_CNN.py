@@ -69,8 +69,8 @@ def cnn_failout_definitions(failout_survival_setting):
     fog_reliability = failout_survival_setting[0]
     edge_reliability = failout_survival_setting[1]
     
-    edge_failure_lambda = Failout(edge_reliability)
-    fog_failure_lambda = Failout(fog_reliability)
-    return edge_failure_lambda, fog_failure_lambda
+    edge_failout_lambda = Failout(edge_reliability)
+    fog_failout_lambda = Failout(fog_reliability)
+    return edge_failout_lambda, fog_failout_lambda
 
 

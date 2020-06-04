@@ -68,12 +68,12 @@ def define_cnn_deepFogGuard_architecture_IoT(img_input,initial_filters, initial_
         skip_iotfog = layers.Conv2D(128,(1,1),strides = 8, use_bias = False, name = "skip_hyperconnection_iotfog")(iot_output)
     return iot_output, skip_iotfog
 
-def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe = None, edge_failure_lambda = None):
+def define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe = None, edge_failout_lambda = None):
     if multiply_hyperconnection_weight_layer_IoTe != None:
         iot_output = multiply_hyperconnection_weight_layer_IoTe(iot_output)
     edge_output, filters = define_cnn_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides)
-    if edge_failure_lambda != None:
-         edge_output = edge_failure_lambda(edge_output)
+    if edge_failout_lambda != None:
+         edge_output = edge_failout_lambda(edge_output)
     if PARTITION_SETING == 1:
         # need to go from (4,4,64) to (2,2,128) ????
         # 1x1 conv2d is used to change the filter size (from 64 to 128).  Stride is 2 for 4->2

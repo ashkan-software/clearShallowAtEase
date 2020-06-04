@@ -77,12 +77,12 @@ def define_cnn_deepFogGuard_architecture_IoT(input_shape, alpha, img_input, stri
         raise ValueError("Invalid stride configuration")
     return iot_output, skip_iotfog
 
-def define_cnn_deepFogGuard_architecture_edge(iot_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe = None, strides = (2,2), edge_failure_lambda = None):
+def define_cnn_deepFogGuard_architecture_edge(iot_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe = None, strides = (2,2), edge_failout_lambda = None):
     if multiply_hyperconnection_weight_layer_IoTe != None:
         iot_output = multiply_hyperconnection_weight_layer_IoTe(iot_output)
     edge_output = define_cnn_architecture_edge(iot_output,alpha,depth_multiplier, strides= strides)
-    if edge_failure_lambda != None:
-         edge_output = edge_failure_lambda(edge_output)
+    if edge_failout_lambda != None:
+         edge_output = edge_failout_lambda(edge_output)
     # used stride 4 to match (31,31,64) to (7,7,256)
     # 1x1 conv2d is used to change the filter size (from 64 to 256).  Stride is 4 for 31->7
     # 256 (alpha=0.5), 384 (alpha=0.75)

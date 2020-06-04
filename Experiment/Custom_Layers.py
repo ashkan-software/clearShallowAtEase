@@ -2,19 +2,6 @@ from keras.layers import Layer, Add, Lambda
 import keras.layers as layers
 import keras.backend as K
 
-
-class FailureDetector(Layer):
-    def __init__(self, reliability, seed=None, **kwargs):
-        super(FailureDetector, self).__init__(**kwargs)
-        self.has_failed = None
-    
-    def call(self, inputs):
-        var = K.random_uniform(K.variable(0).shape, seed = self.seed)
-        # if the input is > 0, there is no failure, and if it is < 0, there is a failure
-        self.has_failed = K.less(inputs, var)
-        return inputs
-
-
 class Failout(Layer):
     """Applies Failout to the output of a node.
     # Arguments
