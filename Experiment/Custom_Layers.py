@@ -45,31 +45,23 @@ class InputMux(Add):
     # Arguments
         node_has_failed: Boolean Tensor showing if the downstream node has failed
     """
-    def __init__(self, has_failed, **kwargs):
+    def __init__(self, mux_adds=False, **kwargs):
         super(InputMux, self).__init__(**kwargs)
-        self.has_failed = has_failed
-        # self.name = name
+        self.mux_adds = mux_adds
 
     def _merge_function(self, inputs):
         """
         # inputs
         the two incoming connections to a node. inputs[0] MUST be the input from skip hyperconnection
         and inputs[1] MUST be the input from the node below.
-        
-        Since Failout happens during training, we do not need the Failout informaton for selection of
-        the inputs in `K.switch(self.has_failed, inputs[0], inputs[1])`. During training, the two
-        inpus are always added (Failout during training will make the output zero, so it has its
-        own impact on the training.)
         """
-        sum = K.sum(inputs[1]) # sum of tensor value coming from the node below
-        zero = K.variable(0)
-        node_below_has_failed = K.equal(sum, zero)
 
-        selected = K.switch(node_below_has_failed, inputs[0], inputs[1]) # selects one of the inputs. 
-        # If the node below has failed, use the input from skip hyperconnection, otherwise, use the input from the node below
-        
-        added = layers.add(inputs) # calls the add function
-
-        output = K.in_train_phase(added, selected)
-        output._uses_learning_phase = True
+        if self.mux_adds:
+            output = layers.add(inputs) # calls the add function
+        else: 
+            sum = K.sum(inputs[1]) # sum of tensor value coming from the node below
+            zero = K.variable(0)
+            node_below_has_failed = K.equal(sum, zero)
+            output = K.switch(node_below_has_failed, inputs[0], inputs[1]) # selects one of the inputs. 
+            # If the node below has failed, use the input from skip hyperconnection, otherwise, use the input from the node below
         return output

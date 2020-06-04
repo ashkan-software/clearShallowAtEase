@@ -16,7 +16,9 @@ from Experiment.cnn_Vanilla_MobileNet import imagenet_related_functions, define_
 from Experiment.Custom_Layers import InputMux
 from Experiment.common_exp_methods import compile_keras_parallel_model
 from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
-# ResiliNet
+
+MUX_ADDS = False
+
 def define_ResiliNet_CNN_MobileNet(input_shape=None,
                                     alpha=1.0,
                                     depth_multiplier=1,
@@ -60,11 +62,11 @@ def define_ResiliNet_CNN_MobileNet(input_shape=None,
     edge_output, skip_edgecloud = define_cnn_ResiliNet_architecture_edge(iot_output,alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe, strides = strides, edge_failout_lambda = edge_failout_lambda)
     
     # fog node
-    fog_output = define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, edge_failout_lambda, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef, strides = strides)
+    fog_output = define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef, strides = strides)
     fog_output = fog_failout_lambda(fog_output)
 
     # cloud node
-    cloud_output = define_cnn_ResiliNet_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, fog_failout_lambda, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
+    cloud_output = define_cnn_ResiliNet_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, multiply_hyperconnection_weight_layer_fc, multiply_hyperconnection_weight_layer_ec)
     
     model, parallel_model = compile_keras_parallel_model(img_input, cloud_output, num_gpus)
     return model, parallel_model
@@ -77,11 +79,11 @@ def define_cnn_ResiliNet_architecture_edge(iot_output, alpha, depth_multiplier, 
     edge_output, skip_edgecloud = define_cnn_deepFogGuard_architecture_edge(iot_output,alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTe, strides = strides, edge_failout_lambda = edge_failout_lambda)
     return edge_output, skip_edgecloud
 
-def define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, edge_failout_lambda, multiply_hyperconnection_weight_layer_IoTf = None, multiply_hyperconnection_weight_layer_ef = None, strides = (2,2)):
+def define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, alpha, depth_multiplier, multiply_hyperconnection_weight_layer_IoTf = None, multiply_hyperconnection_weight_layer_ef = None, strides = (2,2)):
     if multiply_hyperconnection_weight_layer_IoTf == None or multiply_hyperconnection_weight_layer_ef == None:
-        fog_input = Lambda(InputMux(edge_failout_lambda.has_failed),name="node2_input")([skip_iotfog, edge_output])
+        fog_input = Lambda(InputMux(MUX_ADDS),name="node2_input")([skip_iotfog, edge_output])
     else:
-        fog_input = Lambda(InputMux(edge_failout_lambda.has_failed),name="node2_input")([multiply_hyperconnection_weight_layer_IoTf(skip_iotfog), multiply_hyperconnection_weight_layer_ef(edge_output)]) 
+        fog_input = Lambda(InputMux(MUX_ADDS),name="node2_input")([multiply_hyperconnection_weight_layer_IoTf(skip_iotfog), multiply_hyperconnection_weight_layer_ef(edge_output)]) 
     fog = define_cnn_architecture_fog(fog_input,alpha,depth_multiplier)
     # cnn for imagenet does not need padding
     if strides == (2,2):
@@ -94,10 +96,10 @@ def define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, alpha, depth
     
     return fog_output
 
-def define_cnn_ResiliNet_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, fog_failout_lambda, multiply_hyperconnection_weight_layer_fc = None, multiply_hyperconnection_weight_layer_ec = None):
+def define_cnn_ResiliNet_architecture_cloud(fog_output, skip_edgecloud, alpha, depth_multiplier, classes, include_top, pooling, multiply_hyperconnection_weight_layer_fc = None, multiply_hyperconnection_weight_layer_ec = None):
     if multiply_hyperconnection_weight_layer_fc == None or multiply_hyperconnection_weight_layer_ec == None:
-        cloud_input = Lambda(InputMux(fog_failout_lambda.has_failed),name="node1_input")([skip_edgecloud, fog_output])
+        cloud_input = Lambda(InputMux(MUX_ADDS),name="node1_input")([skip_edgecloud, fog_output])
     else:
-        cloud_input = Lambda(InputMux(fog_failout_lambda.has_failed),name="node1_input")([multiply_hyperconnection_weight_layer_ec(skip_edgecloud), multiply_hyperconnection_weight_layer_fc(fog_output)]) 
+        cloud_input = Lambda(InputMux(MUX_ADDS),name="node1_input")([multiply_hyperconnection_weight_layer_ec(skip_edgecloud), multiply_hyperconnection_weight_layer_fc(fog_output)]) 
     cloud_output = define_cnn_architecture_cloud(cloud_input,alpha,depth_multiplier,classes,include_top,pooling)
     return cloud_output

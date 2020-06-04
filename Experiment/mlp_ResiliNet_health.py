@@ -11,18 +11,7 @@ from keras.models import Model
 from keras.backend import constant
 import random 
 
-class NodeFailure:
-
-    def __init__(self, fog2_mux, fog1_mux, cloud_mux):
-        # boolean Tensors that will show if a node has failed `during inference`
-        # K.variable(0) means the node has not failed, and K.variable(1) means it has
-        # self.fog1_failed = K.variable(0)
-        # self.fog2_failed = K.variable(0)
-        # self.edge_failed = K.variable(0)
-        self.fog2_mux = fog2_mux
-        self.fog1_mux = fog1_mux
-        self.cloud_mux = cloud_mux
-
+MUX_ADDS = False
 
 def define_ResiliNet_MLP(num_vars,
                             num_classes,
@@ -67,22 +56,19 @@ def define_ResiliNet_MLP(num_vars,
     # edge node
     edge_output = define_MLP_ResiliNet_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
     edge_output = edge_failout_lambda(edge_output)
-    node_failure = None
+    
     # fog node 2
-    fog2_output, fog2_mux = define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, edge_failout_lambda, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2, node_failure)
+    fog2_output = define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2)
     fog2_output = fog2_failout_lambda(fog2_output)
 
     # fog node 1
-    fog1_output, fog1_mux = define_MLP_ResiliNet_architecture_fog1(edge_output, fog2_output, hidden_units, fog2_failout_lambda, multiply_hyperconnection_weight_layer_ef1, multiply_hyperconnection_weight_layer_f2f1, node_failure)
+    fog1_output = define_MLP_ResiliNet_architecture_fog1(edge_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1, multiply_hyperconnection_weight_layer_f2f1)
     fog1_output = fog1_failout_lambda(fog1_output)
 
     # cloud node
-    cloud_output, cloud_mux = define_MLP_ResiliNet_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, fog1_failout_lambda, multiply_hyperconnection_weight_layer_f1c, multiply_hyperconnection_weight_layer_f2c, node_failure)
-
-    node_failure = NodeFailure(fog2_mux, fog1_mux, cloud_mux)
+    cloud_output = define_MLP_ResiliNet_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c, multiply_hyperconnection_weight_layer_f2c)
 
     model = Model(inputs=iot_output, outputs=cloud_output)
-    model.node_failure = node_failure
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
@@ -102,29 +88,26 @@ def define_MLP_ResiliNet_architecture_IoT(img_input, hidden_units):
 def define_MLP_ResiliNet_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe = None):
     return define_MLP_deepFogGuard_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
 
-def define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, edge_failout_lambda, multiply_hyperconnection_weight_layer_IoTf2 = None, multiply_hyperconnection_weight_layer_ef2 = None, node_failure = None):
-    fog2_mux = InputMux(K.variable(0))
+def define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2 = None, multiply_hyperconnection_weight_layer_ef2 = None):
     if multiply_hyperconnection_weight_layer_IoTf2 == None or multiply_hyperconnection_weight_layer_ef2 == None:
-        fog2_input = Lambda(fog2_mux,name="node3_input")([iot_skip_output, edge_output])
+        fog2_input = Lambda(InputMux(MUX_ADDS),name="node3_input")([iot_skip_output, edge_output])
     else:
-        fog2_input = Lambda(fog2_mux,name="node3_input")([multiply_hyperconnection_weight_layer_IoTf2(iot_skip_output), multiply_hyperconnection_weight_layer_ef2(edge_output)])
+        fog2_input = Lambda(InputMux(MUX_ADDS),name="node3_input")([multiply_hyperconnection_weight_layer_IoTf2(iot_skip_output), multiply_hyperconnection_weight_layer_ef2(edge_output)])
     fog2_output = define_MLP_architecture_fog2(fog2_input, hidden_units)
-    return fog2_output, fog2_mux
+    return fog2_output
 
-def define_MLP_ResiliNet_architecture_fog1(edge_skip_output, fog2_output, hidden_units, fog2_failout_lambda, multiply_hyperconnection_weight_layer_ef1 = None, multiply_hyperconnection_weight_layer_f2f1 = None, node_failure = None):
-    fog1_mux = InputMux(K.variable(0))
+def define_MLP_ResiliNet_architecture_fog1(edge_skip_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1 = None, multiply_hyperconnection_weight_layer_f2f1 = None):
     if multiply_hyperconnection_weight_layer_ef1 == None or multiply_hyperconnection_weight_layer_f2f1 == None:
-        fog1_input = Lambda(fog1_mux,name="node2_input")([edge_skip_output, fog2_output])
+        fog1_input = Lambda(InputMux(MUX_ADDS),name="node2_input")([edge_skip_output, fog2_output])
     else:
-        fog1_input = Lambda(fog1_mux,name="node2_input")([multiply_hyperconnection_weight_layer_ef1(edge_skip_output), multiply_hyperconnection_weight_layer_f2f1(fog2_output)])
+        fog1_input = Lambda(InputMux(MUX_ADDS),name="node2_input")([multiply_hyperconnection_weight_layer_ef1(edge_skip_output), multiply_hyperconnection_weight_layer_f2f1(fog2_output)])
     fog1_output = define_MLP_architecture_fog1(fog1_input, hidden_units)  
-    return fog1_output, fog1_mux
+    return fog1_output
 
-def define_MLP_ResiliNet_architecture_cloud(fog2_skip_output, fog1_output, hidden_units, num_classes, fog1_failout_lambda, multiply_hyperconnection_weight_layer_f1c = None, multiply_hyperconnection_weight_layer_f2c = None, node_failure = None):
-    cloud_mux = InputMux(K.variable(0))
+def define_MLP_ResiliNet_architecture_cloud(fog2_skip_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c = None, multiply_hyperconnection_weight_layer_f2c = None):
     if multiply_hyperconnection_weight_layer_f1c == None or multiply_hyperconnection_weight_layer_f2c == None:
-        cloud_input = Lambda(cloud_mux,name="node1_input")([fog2_skip_output, fog1_output])
+        cloud_input = Lambda(InputMux(MUX_ADDS),name="node1_input")([fog2_skip_output, fog1_output])
     else:
-        cloud_input = Lambda(cloud_mux,name="node1_input")([multiply_hyperconnection_weight_layer_f2c(fog2_skip_output), multiply_hyperconnection_weight_layer_f1c(fog1_output)])
+        cloud_input = Lambda(InputMux(MUX_ADDS),name="node1_input")([multiply_hyperconnection_weight_layer_f2c(fog2_skip_output), multiply_hyperconnection_weight_layer_f1c(fog1_output)])
     cloud_output = define_MLP_architecture_cloud(cloud_input, hidden_units, num_classes)
-    return cloud_output, cloud_mux
+    return cloud_output
