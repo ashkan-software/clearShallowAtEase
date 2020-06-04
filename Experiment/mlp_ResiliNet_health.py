@@ -67,7 +67,7 @@ def define_ResiliNet_MLP(num_vars,
     # edge node
     edge_output = define_MLP_ResiliNet_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
     edge_output = edge_failout_lambda(edge_output)
-
+    node_failure = None
     # fog node 2
     fog2_output, fog2_mux = define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, edge_failout_lambda, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2, node_failure)
     fog2_output = fog2_failout_lambda(fog2_output)
