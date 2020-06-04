@@ -54,15 +54,6 @@ class accuracy:
                 sys.exit()
             for i, _ in enumerate(fail_layers):
                 set_weights_zero_CNN(model, fail_layers, i)
-        
-        def set_failed_Tensors_health(model, index, failed):
-            # if failed = 0, the node has not failed. if failed = 1, it has failed.
-            if index == 0: # fog1
-                model.node_failure.cloud_mux.has_failed = K.variable(failed)
-            if index == 1: # fog2
-                model.node_failure.fog1_mux.has_failed = K.variable(failed)
-            if index == 2: #edge
-                model.node_failure.fog2_mux.has_failed = K.variable(failed)
 
         # input is image 
         if self.experiment_name == "Camera":
@@ -101,9 +92,6 @@ class accuracy:
                 # node failed
                 if node == 0:
                     set_weights_zero_MLP(model, layers, index)
-                    set_failed_Tensors_health(model, index, 1) # 1 means failure here :)
-                else:
-                    set_failed_Tensors_health(model, index, 0) # 1 means failure here :)
         elif self.experiment_name is not "Imagenet": 
             print("Error! Please specify the correct experiment name")
             sys.exit()
