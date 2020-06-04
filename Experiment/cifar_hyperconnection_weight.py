@@ -17,7 +17,6 @@ from Experiment.common_exp_methods import make_no_information_flow_map
 from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, weight_scheme, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
-    K.set_learning_phase(1)
     if model_name == "DeepFogGuard Hyperconnection Weight":
         model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_hyperconnection_deepFogGuard.h5'
         model, parallel_model = define_deepFogGuard_CNN_MobileNet(classes=classes,input_shape = input_shape, alpha = alpha,reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme, strides = strides, num_gpus=num_gpus)

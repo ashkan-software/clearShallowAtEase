@@ -61,7 +61,6 @@ def make_output_dictionary(model_name, reliability_settings, num_iterations, ski
     return output
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
-    K.set_learning_phase(1)
     if model_name == "DeepFogGuard Hyperconnection Weight Sensitivity":
         model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'cifar_skiphyperconnection_sensitivity_deepFogGuard.h5'
         model, parallel_model = define_deepFogGuard_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, reliability_setting=reliability_setting, skip_hyperconnection_config = skip_hyperconnection_configuration, strides = strides, num_gpus=num_gpus)

@@ -14,7 +14,6 @@ from Experiment.common_exp_methods import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
-    K.set_learning_phase(1)
     # ResiliNet
     if model_name == "ResiliNet":
         model = define_ResiliNet_MLP(num_vars,num_classes,hidden_units)

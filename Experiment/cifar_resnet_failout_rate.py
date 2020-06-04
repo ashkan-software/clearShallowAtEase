@@ -16,7 +16,6 @@ from Experiment.common_exp_methods import make_no_information_flow_map
 from Experiment.cnn_deepFogGuard_ResNet import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, failout_survival_setting, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
-    K.set_learning_phase(1)
     model_file = 'models/' + str(iteration) + " " + str(failout_survival_setting) + 'cifar_resnet_failout_rate.h5'
     model, parallel_model = define_ResiliNet_CNN_ResNet(input_shape=input_shape, classes=classes, block='basic', residual_unit='v2',
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,

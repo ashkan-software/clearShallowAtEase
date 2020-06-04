@@ -11,7 +11,6 @@ from Experiment.common_exp_methods import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, failout_survival_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
-    K.set_learning_phase(1)
     model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units,failout_survival_setting=failout_survival_setting)
     model_file = 'models/' + str(iteration) + " " + str(failout_survival_setting) + 'camera_failout_rate.h5'
     get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, verbose)

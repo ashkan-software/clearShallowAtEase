@@ -13,7 +13,6 @@ from Experiment.common_exp_methods import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
-    K.set_learning_phase(1)
     if model_name == "DeepFogGuard Hyperconnection Weight":
         model = define_deepFogGuard_MLP(num_vars,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)
         model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'health_hyperconnection_deepFogGuard.h5'

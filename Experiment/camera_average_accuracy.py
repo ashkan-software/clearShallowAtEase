@@ -16,7 +16,6 @@ from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_conf
 
 
 def define_and_train(iteration, model_name, load_for_inference,train_data, train_labels, val_data, val_labels, input_shape, num_classes, hidden_units, verbose, batch_size, epochs):
-    K.set_learning_phase(1)
     # ResiliNet
     if model_name == "ResiliNet":
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units)

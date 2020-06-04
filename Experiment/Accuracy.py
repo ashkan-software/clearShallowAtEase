@@ -182,7 +182,6 @@ class accuracy:
         ### Returns
             return weighted accuracy 
         """  
-        K.set_learning_phase(0)
         numNodes = len(reliability_setting)
         accuracyList, weightList = self.iterateAllFailureCombinationsCalcAccuracy(reliability_setting,numNodes, model,no_information_flow_map,output_list,training_labels,test_data,test_labels, test_generator, num_test_examples)
         weightList = normalize(weightList)

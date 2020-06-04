@@ -13,7 +13,6 @@ from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_c
 
 import tensorflow as tf
 def define_and_train(iteration, model_name, load_for_inference, continue_training, train_generator, val_generator, input_shape, classes, alpha,num_train_examples, epochs,num_gpus, strides, num_workers):
-    K.set_learning_phase(1)
     model, parallel_model, model_file = define_model(iteration, model_name, "imagenet", input_shape, classes, alpha, strides, num_gpus, weights='imagenet')
     model = get_model_weights_CNN_imagenet(model, parallel_model, model_name, load_for_inference, continue_training, model_file, train_generator, val_generator,num_train_examples,epochs, num_gpus, num_workers)
     return model
