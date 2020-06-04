@@ -22,6 +22,7 @@ class Failout(Layer):
         self.has_failed = K.greater(rand, self.failout_survival_rate)
         failout_ready_inputs = K.switch(self.has_failed, fail(inputs), inputs)
         failout = K.in_train_phase(failout_ready_inputs, inputs)
+        failout._uses_learning_phase = True
         # failout = tf.print(failout, [failout], message='output of failout layer=', summarize=100)
         return failout
 
@@ -60,11 +61,15 @@ class InputMux(Add):
         inpus are always added (Failout during training will make the output zero, so it has its
         own impact on the training.)
         """
-        
-        selected = K.switch(self.has_failed, inputs[0], inputs[1]) # selects one of the inputs. 
+        sum = K.sum(inputs[1]) # sum of tensor value coming from the node below
+        zero = K.variable(0)
+        node_below_has_failed = K.equal(sum, zero)
+
+        selected = K.switch(node_below_has_failed, inputs[0], inputs[1]) # selects one of the inputs. 
         # If the node below has failed, use the input from skip hyperconnection, otherwise, use the input from the node below
         
         added = layers.add(inputs) # calls the add function
 
         output = K.in_train_phase(added, selected)
+        output._uses_learning_phase = True
         return output
