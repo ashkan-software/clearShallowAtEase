@@ -123,8 +123,8 @@ def define_MLP_ResiliNet_architecture_fog1(edge_skip_output, fog2_output, hidden
 def define_MLP_ResiliNet_architecture_cloud(fog2_skip_output, fog1_output, hidden_units, num_classes, fog1_failout_lambda, multiply_hyperconnection_weight_layer_f1c = None, multiply_hyperconnection_weight_layer_f2c = None, node_failure = None):
     cloud_mux = InputMux(K.variable(0))
     if multiply_hyperconnection_weight_layer_f1c == None or multiply_hyperconnection_weight_layer_f2c == None:
-        cloud_input = Lambda(fog1_mux,name="node1_input")([fog2_skip_output, fog1_output])
+        cloud_input = Lambda(cloud_mux,name="node1_input")([fog2_skip_output, fog1_output])
     else:
-        cloud_input = Lambda(fog1_mux,name="node1_input")([multiply_hyperconnection_weight_layer_f2c(fog2_skip_output), multiply_hyperconnection_weight_layer_f1c(fog1_output)])
+        cloud_input = Lambda(cloud_mux,name="node1_input")([multiply_hyperconnection_weight_layer_f2c(fog2_skip_output), multiply_hyperconnection_weight_layer_f1c(fog1_output)])
     cloud_output = define_MLP_architecture_cloud(cloud_input, hidden_units, num_classes)
     return cloud_output, cloud_mux
