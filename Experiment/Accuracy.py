@@ -5,6 +5,7 @@ import numpy as np
 import sys
 from Experiment.common_exp_methods import convertBinaryToList
 from Experiment.cnn_Vanilla_ResNet import PARTITION_SETING
+from Experiment.mlp_ResiliNet_health import edge_failed, fog1_failed, fog2_failed
 
 modelAccuracyDict = dict()
 
@@ -54,6 +55,15 @@ class accuracy:
                 sys.exit()
             for i, _ in enumerate(fail_layers):
                 set_weights_zero_CNN(model, fail_layers, i)
+        
+        def set_failed_Tensors_health(index, failed):
+            # if failed = 0, the node has not failed. if failed = 1, it has failed.
+            if index == 0:
+                fog1_failed = K.variable(failed)
+            if index == 1:
+                fog2_failed = K.variable(failed)
+            if index == 2:
+                edge_failed = K.variable(failed)
 
         # input is image 
         if self.experiment_name == "Camera":
@@ -92,7 +102,10 @@ class accuracy:
                 # node failed
                 if node == 0:
                     set_weights_zero_MLP(model, layers, index)
-        elif self.experiment_name is not "Imagenet":
+                    set_failed_Tensors_health(index, 1) # 1 means failure here :)
+                else:
+                    set_failed_Tensors_health(index, 0) # 1 means failure here :)
+        elif self.experiment_name is not "Imagenet": 
             print("Error! Please specify the correct experiment name")
             sys.exit()
 

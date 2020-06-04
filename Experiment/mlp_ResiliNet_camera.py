@@ -143,10 +143,10 @@ def define_MLP_ResiliNet_architecture_fog1(fog2_output, fog3_output, fog4_output
     return fog1_output
 
 
-def define_MLP_ResiliNet_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, fog2_failout_lambda, multiply_hyperconnection_weight_layer):
+def define_MLP_ResiliNet_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, fog1_failout_lambda, multiply_hyperconnection_weight_layer):
     if multiply_hyperconnection_weight_layer == None or multiply_hyperconnection_weight_layer["f1c"] == None or multiply_hyperconnection_weight_layer["f2c"] == None:
-        cloud_input = Lambda(InputMux(fog2_failout_lambda.has_failed),name="node1_input")([fog2_output, fog1_output])
+        cloud_input = Lambda(InputMux(fog1_failout_lambda.has_failed),name="node1_input")([fog2_output, fog1_output])
     else:
-        cloud_input = Lambda(InputMux(fog2_failout_lambda.has_failed),name="node1_input")([multiply_hyperconnection_weight_layer["f2c"](fog2_output), multiply_hyperconnection_weight_layer["f1c"](fog1_output)])
+        cloud_input = Lambda(InputMux(fog1_failout_lambda.has_failed),name="node1_input")([multiply_hyperconnection_weight_layer["f2c"](fog2_output), multiply_hyperconnection_weight_layer["f1c"](fog1_output)])
     cloud_output = define_MLP_architecture_cloud(cloud_input, hidden_units, num_classes)
     return cloud_output
