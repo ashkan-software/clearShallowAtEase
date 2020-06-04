@@ -16,7 +16,7 @@ MUX_ADDS = False
 def define_ResiliNet_MLP(num_vars,
                             num_classes,
                             hidden_units,
-                            failout_survival_setting = [0.95,0.95,0.95],
+                            failout_survival_setting = [0.9,0.9,0.9],
                             reliability_setting = [1.0,1.0,1.0], 
                             skip_hyperconnection_config = default_skip_hyperconnection_config, 
                             hyperconnection_weights_scheme = 1):

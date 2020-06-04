@@ -23,7 +23,7 @@ def define_ResiliNet_CNN_ResNet(input_shape=None, classes=10, block='basic', res
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                 initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
                                 final_pooling=None, top='classification',
-                                failout_survival_setting = [.95,.95],
+                                failout_survival_setting = [.9,.9],
                                 skip_hyperconnection_config = default_skip_hyperconnection_config, 
                                 reliability_setting=[1.0,1.0], 
                                 hyperconnection_weights_scheme = 1,
