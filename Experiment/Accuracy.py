@@ -4,7 +4,8 @@ import keras.backend as K
 import numpy as np
 import sys
 from Experiment.common_exp_methods import convertBinaryToList
-from Experiment.cnn_Vanilla_ResNet import PARTITION_SETING
+from Experiment.cnn_Vanilla_ResNet import PARTITION_SETING as PARTITION_SETING_ResNet
+from Experiment.cnn_Vanilla_MobileNet import PARTITION_SETING as PARTITION_SETING_MobileNet
 
 modelAccuracyDict = dict()
 
@@ -72,15 +73,18 @@ class accuracy:
                     set_weights_zero_MLP(model, layers, index)
             
         elif self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
-            layers = ["conv_pw_8","conv_pw_3"]
+            if PARTITION_SETING_MobileNet == 1:
+                layers = ["conv_pw_8","conv_pw_3"]
+            else: # PARTITION_SETING_MobileNet == 2
+                layers = ["conv_pw_7","conv_pw_3"]
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
-            if PARTITION_SETING == 1:
+            if PARTITION_SETING_ResNet == 1:
                 layers_edge = ["conv_6","conv_3","skip_conv_4"] # skip_conv_4 is the last one in the "recursion"
                 layers_fog = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
-            else: # PARTITION_SETING == 2
+            else: # PARTITION_SETING_ResNet == 2
                 layers_edge = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
                 layers_fog = ["conv_16","conv_13","skip_conv_14"] # skip_conv_14 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
