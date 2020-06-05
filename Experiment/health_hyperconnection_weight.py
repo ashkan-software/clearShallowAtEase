@@ -44,13 +44,14 @@ if __name__ == "__main__":
     output_list = []
     
     output, weight_schemes = make_output_dictionary_hyperconnection_weight(model_name, reliability_settings, num_iterations)
+    considered_weight_schemes = [1,2,3,4]
     default_reliability_setting = [1,1,1]
     make_results_folder()
     for iteration in range(1,num_iterations+1):   
         output_list.append('ITERATION ' + str(iteration) +  '\n')
         print("ITERATION ", iteration)
         # loop through all the weight schemes
-        for weight_scheme in weight_schemes:
+        for weight_scheme in considered_weight_schemes:
             if weight_scheme == 2 or weight_scheme == 3: # if the weight scheme depends on reliability
                 for reliability_setting in reliability_settings:
                     hyperconnection_weight = define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
