@@ -39,9 +39,11 @@ class accuracy:
             # make new weights for the connections
             new_weights = np.zeros(layer_weights[0].shape)
              # make new weights for biases
-            if self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
-                layer.set_weights([new_weights])
-            else: # self.experiment_name == "ResNet":
+            
+            # kill batch normalizations
+            if "bn" in layer_name:
+                layer.set_weights([new_weights,new_weights,new_weights,new_weights])
+            else:
                 new_bias_weights = np.zeros(layer_weights[1].shape)
                 layer.set_weights([new_weights,new_bias_weights])
 
@@ -74,19 +76,19 @@ class accuracy:
             
         elif self.experiment_name == "CIFAR" or self.experiment_name == "Imagenet": 
             if PARTITION_SETING_MobileNet == 1:
-                layers = ["conv_pw_8","conv_pw_3"]
+                layers = ["conv_pw_8_bn","conv_pw_3_bn"]
             else: # PARTITION_SETING_MobileNet == 2
-                layers = ["conv_pw_7","conv_pw_3"]
+                layers = ["conv_pw_7_bn","conv_pw_3_bn"]
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN(model, layers, index)
         elif self.experiment_name == "ResNet":
             if PARTITION_SETING_ResNet == 1:
-                layers_edge = ["conv_6","conv_3","skip_conv_4"] # skip_conv_4 is the last one in the "recursion"
-                layers_fog = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
+                layers_edge = ["conv_6","conv_3","skip_bn_4"] # skip_bn_4 is the last one in the "recursion"
+                layers_fog = ["conv_11","conv_8","skip_bn_9"] # skip_bn_9 is the last one in the "recursion"
             else: # PARTITION_SETING_ResNet == 2
-                layers_edge = ["conv_11","conv_8","skip_conv_9"] # skip_conv_9 is the last one in the "recursion"
-                layers_fog = ["conv_16","conv_13","skip_conv_14"] # skip_conv_14 is the last one in the "recursion"
+                layers_edge = ["conv_11","conv_8","skip_bn_9"] # skip_bn_9 is the last one in the "recursion"
+                layers_fog = ["conv_16","conv_13","skip_bn_14"] # skip_bn_14 is the last one in the "recursion"
             for index,node in enumerate(node_failure_combination):
                 if node == 0: # dead
                     set_weights_zero_CNN_ResNet(model, layers_edge, layers_fog, index)
