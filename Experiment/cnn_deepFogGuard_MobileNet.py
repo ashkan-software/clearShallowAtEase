@@ -9,9 +9,9 @@ import keras.backend as K
 import keras.layers as layers
 from keras_applications.imagenet_utils import _obtain_input_shape, get_submodules_from_kwargs
 import random 
-from Experiment.common_exp_methods_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
+from Experiment.common_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
 from Experiment.cnn_Vanilla_MobileNet import define_cnn_architecture_IoT, define_cnn_architecture_cloud, define_cnn_architecture_edge, define_cnn_architecture_fog, imagenet_related_functions
-from Experiment.common_exp_methods import compile_keras_parallel_model
+from Experiment.common import compile_keras_parallel_model
 
 default_skip_hyperconnection_config = [1,1]
 def define_deepFogGuard_CNN_MobileNet(input_shape=None,

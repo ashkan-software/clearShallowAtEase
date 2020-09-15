@@ -2,16 +2,16 @@
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_Vanilla_camera import define_vanilla_model_MLP
-from Experiment.Accuracy import accuracy
-from Experiment.common_exp_methods_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
-from Experiment.common_exp_methods import write_n_upload, average
-from Experiment.common_exp_methods import convert_to_string, make_output_dictionary_average_accuracy
+from Experiment.accuracy import accuracy
+from Experiment.common_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
+from Experiment.common import write_n_upload, average
+from Experiment.common import convert_to_string, make_output_dictionary_average_accuracy
 import keras.backend as K
 import datetime
 import gc
 import os
 import numpy as np
-from Experiment.common_exp_methods import make_no_information_flow_map
+from Experiment.common import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
 
 
@@ -36,13 +36,13 @@ def define_and_train(iteration, model_name, load_for_inference,train_data, train
 def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliability_setting, output_list,train_labels, test_data, test_labels):
     output_list.append(model_name + "\n")
     print(model_name)
-    output[model_name][str(reliability_setting)][iteration-1] = calculateExpectedAccuracy(model, no_information_flow_map, reliability_setting, output_list, training_labels= train_labels, test_data= test_data, test_labels= test_labels)
+    output[model_name][str(reliability_setting)][iteration-1] = calc_expected_accuracy(model, no_information_flow_map, reliability_setting, output_list, training_labels= train_labels, test_data= test_data, test_labels= test_labels)
 
 
 # runs all 3 failure configurations for all 3 models
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
-    calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
+    calc_expected_accuracy = accuracy.calc_expected_accuracy
     
     use_GCP = False
     train_data,val_data, test_data, train_labels,val_labels,test_labels = init_data(use_GCP) 
@@ -92,13 +92,13 @@ if __name__ == "__main__":
         deepFogGuard_acc = average(output["deepFogGuard"][str(reliability_setting)])
         Vanilla_acc = average(output["Vanilla"][str(reliability_setting)])
 
-        output_list.append(str(reliability_setting) + " ResiliNet Accuracy: " + str(ResiliNet_acc) + '\n')
-        output_list.append(str(reliability_setting) + " deepFogGuard Accuracy: " + str(deepFogGuard_acc) + '\n')
-        output_list.append(str(reliability_setting) + " Vanilla Accuracy: " + str(Vanilla_acc) + '\n')
+        output_list.append(str(reliability_setting) + " ResiliNet accuracy: " + str(ResiliNet_acc) + '\n')
+        output_list.append(str(reliability_setting) + " deepFogGuard accuracy: " + str(deepFogGuard_acc) + '\n')
+        output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
 
-        print(str(reliability_setting),"ResiliNet Accuracy:",ResiliNet_acc)
-        print(str(reliability_setting),"deepFogGuard Accuracy:",deepFogGuard_acc)
-        print(str(reliability_setting),"Vanilla Accuracy:",Vanilla_acc)
+        print(str(reliability_setting),"ResiliNet accuracy:",ResiliNet_acc)
+        print(str(reliability_setting),"deepFogGuard accuracy:",deepFogGuard_acc)
+        print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
 
         ResiliNet_std = np.std(output["ResiliNet"][str(reliability_setting)],ddof=1)
         deepFogGuard_std = np.std(output["deepFogGuard"][str(reliability_setting)],ddof=1)

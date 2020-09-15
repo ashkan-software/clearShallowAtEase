@@ -1,7 +1,7 @@
 import networkx as nx
 
 def create_graph_CNN(skip_hyperconnection_config = None):
-    G = nx.DiGraph()
+    G = nx.Digraph()
     # Vanilla
     G.add_node('IoT')
     G.add_node('e')
@@ -20,7 +20,7 @@ def create_graph_CNN(skip_hyperconnection_config = None):
     return G
 
 def create_graph_MLP_health(skip_hyperconnection_config = None):
-    G = nx.DiGraph()
+    G = nx.Digraph()
     # Vanilla
     G.add_node('IoT')
     G.add_node('e')
@@ -43,7 +43,7 @@ def create_graph_MLP_health(skip_hyperconnection_config = None):
     return G
 
 def create_graph_MLP_camera(skip_hyperconnection_config = None):
-    G = nx.DiGraph()
+    G = nx.Digraph()
     # Vanilla
     G.add_node('cams') # dummy node to connect to all edge nodes
     G.add_node('e1')

@@ -5,7 +5,7 @@ import keras.layers as layers
 from Experiment.mlp_deepFogGuard_health import define_MLP_deepFogGuard_architecture_edge, define_MLP_deepFogGuard_architecture_IoT
 from Experiment.mlp_deepFogGuard_health import define_hyperconnection_weight_lambda_layers, set_hyperconnection_weights
 from Experiment.mlp_Vanilla_health import define_MLP_architecture_cloud, define_MLP_architecture_fog1, define_MLP_architecture_fog2
-from Experiment.Custom_Layers import Failout, InputMux
+from Experiment.custom_layers import Failout, InputMux
 from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
 from keras.models import Model
 from keras.backend import constant

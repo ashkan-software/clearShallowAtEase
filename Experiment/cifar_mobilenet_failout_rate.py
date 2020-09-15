@@ -9,7 +9,7 @@ import math
 import os 
 from Experiment.cnn_ResiliNet_MobileNet import define_ResiliNet_CNN_MobileNet, MUX_ADDS
 from Experiment.accuracy import accuracy
-from Experiment.common_CNN_cifar import init_data, init_common_experiment_params, get_model_weights_CNN_cifar
+from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar
 from Experiment.common import average, make_results_folder, make_output_dictionary_failout_rate, write_n_upload
 import numpy as np
 import gc
@@ -42,7 +42,6 @@ if __name__ == "__main__":
     calc_expected_accuracy = accuracy.calc_expected_accuracy
     training_data, test_data, training_labels, test_labels, val_data, val_labels = init_data() 
 
-    num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus = init_common_experiment_params() 
     output_list = []
 
     load_for_inference = False

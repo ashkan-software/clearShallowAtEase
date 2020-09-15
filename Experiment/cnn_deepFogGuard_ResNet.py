@@ -9,16 +9,16 @@ import keras.backend as K
 import keras.layers as layers
 from keras_applications.imagenet_utils import _obtain_input_shape, get_submodules_from_kwargs
 import random 
-from Experiment.common_exp_methods_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
+from Experiment.common_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
 from Experiment.cnn_Vanilla_ResNet import define_cnn_architecture_IoT, define_cnn_architecture_cloud, define_cnn_architecture_edge, define_cnn_architecture_fog, init_model, PARTITION_SETING
-from Experiment.common_exp_methods import compile_keras_parallel_model
+from Experiment.common import compile_keras_parallel_model
 
 default_skip_hyperconnection_config = [1,1]
 def define_deepFogGuard_CNN_ResNet(input_shape=None, classes=10, block='basic', residual_unit='v2',
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                    final_pooling=None, top='classification',
+                                    final_pooling=None, top='evaluation',
                                     skip_hyperconnection_config = default_skip_hyperconnection_config, # binary representating if a skip hyperconnection is alive [e1,IoT]
                                     reliability_setting=[1.0,1.0], # reliability of a node between 0 and 1 [f1,e1]
                                     hyperconnection_weights_scheme = 1,

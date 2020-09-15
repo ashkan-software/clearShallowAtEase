@@ -1,13 +1,13 @@
 
-from Experiment.classification import predict
+from Experiment.evaluation import predict
 import keras.backend as K
 import numpy as np
 import sys
-from Experiment.common_exp_methods import convertBinaryToList
+from Experiment.common import convert_binary_to_list
 from Experiment.cnn_Vanilla_ResNet import PARTITION_SETING as PARTITION_SETING_ResNet
 from Experiment.cnn_Vanilla_MobileNet import PARTITION_SETING as PARTITION_SETING_MobileNet
 
-modelAccuracyDict = dict()
+model_accuracy_dict = dict()
 
 class accuracy:
     experiment_name = ""
@@ -16,11 +16,15 @@ class accuracy:
 
     def fail_node(self, model,node_failure_combination):
         """fails node(s) by making the specified node(s) output 0
-        ### Arguments
+
+        Args:
             model (Model): Keras model to have nodes failed
-            node_failure_combination (list): bit list that corresponds to the node failure combination, 1 in the list represents to alive and 0 corresponds to dead. they are ordered from top to down, left to right (like from f1,f2,...,e1,e2,...)
-        ### Returns
-            return a boolean whether the model failed was a cnn or not
+            node_failure_combination (list): bit list that corresponds 
+                to the node failure combination, 1 in the list represents 
+                to alive and 0 corresponds to dead. they are ordered from 
+                top to down, left to right 
+        Returns:
+            returns a boolean whether the model failed was a cnn or not
         """
         def set_weights_zero_MLP(model, layers, index):
             layer_name = layers[index]
@@ -102,45 +106,58 @@ class accuracy:
             print("Error! Please specify the correct experiment name")
             sys.exit()
 
-    def iterateAllFailureCombinationsCalcAccuracy(self,
-                                                reliability_setting,
-                                                numNodes,
-                                                model,
-                                                no_information_flow_map,
-                                                output_list,
-                                                training_labels = None,
-                                                test_data = None,
-                                                test_labels = None,
-                                                test_generator = None, # for imageNet
-                                                num_test_examples = None # for imageNet
-                                                ):
-        """runs through all node failure combinations and calculates the accuracy (and weight) of that particular node failure combination
-        ### Arguments
-            reliability_setting (list): List of the reliability of all nodes, ordered from fog to edge node
-            numNodes (int): number of physical nodes
+    def iterate_failure_combinations(self,
+                                    reliability_setting,
+                                    num_nodes,
+                                    model,
+                                    no_information_flow_map,
+                                    output_list,
+                                    training_labels = None,
+                                    test_data = None,
+                                    test_labels = None,
+                                    test_generator = None,
+                                    num_test_examples = None 
+                                    ):
+        """Runs through all node failure combinations and calculates 
+            the accuracy (and weight) of that particular node failure combination
+        
+        Args:
+            reliability_setting (list): List of the reliability of all nodes, 
+                ordered from fog to edge node
+            num_nodes (int): number of physical nodes
             model (Model): Keras model
+            no_information_flow_map (dictionary): a dictionary that maps from a 
+                certain node failure combination to a boolean, showing if that
+                node failure combination has an accessible path of information
+                to the cloud.
             output_list (list): list that contains string output of the experiment
-            train_labels (numpy array): 1D array that corresponds to each row in the training data with a class label, used for calculating train class distributio
-            test_data (numpy array): 2D array that contains the test data, assumes that each column is a variable and that each row is a test example
-            test_labels (numpy array): 1D array that corresponds to each row in the test data with a class label
-        ### Returns
+            training_labels (numpy array): 1D array that corresponds to each row in 
+                the training data with a class label, used for calculating train 
+                class distributio
+            test_data (numpy array): 2D array that contains the test data, assumes 
+                that each column is a variable and that each row is a test example
+            test_labels (numpy array): 1D array that corresponds to each row in 
+                the test data with a class label
+            test_generator (generator): a generator for test data (for imagenet)
+            num_test_examples (int): number of test examples (for imagenet)
+        Returns:
             return accuracy and weight of each node failure combination
         """ 
-        weightList = []
-        needToGetModelAccuracy = False
-        if model in modelAccuracyDict: # if the accuracy for this model is calculated
-            accuracyList = modelAccuracyDict[model]
+        weight_list = []
+        need_calculating_accuracy = False
+        if model in model_accuracy_dict: # if the accuracy for this model is calculated
+            accuracy_list = model_accuracy_dict[model]
         else:
-            accuracyList = []
-            needToGetModelAccuracy = True
+            accuracy_list = []
+            need_calculating_accuracy = True
 
         output_list.append('Calculating accuracy for reliability setting ' + str(reliability_setting) + '\n')
         print("Calculating accuracy for reliability setting "+ str(reliability_setting))
-        maxNumNodeFailure = 2 ** numNodes
-        for i in range(maxNumNodeFailure):
-            node_failure_combination = convertBinaryToList(i, numNodes)
+        max_node_failures = 2 ** num_nodes
+        for i in range(max_node_failures):
+            node_failure_combination = convert_binary_to_list(i, num_nodes)
             # print(node_failure_combination)
-            if needToGetModelAccuracy:
+            if need_calculating_accuracy:
                 # saves a copy of the original model so it does not change during failures 
                 no_information_flow = no_information_flow_map[tuple(node_failure_combination)]
                 if not no_information_flow:
@@ -154,19 +171,19 @@ class accuracy:
                         accuracy = model.evaluate_generator(test_generator, steps = num_test_examples / test_generator.batch_size)[1]
                 else: 
                     accuracy,_ = predict(model,no_information_flow,training_labels,test_data,test_labels, self.experiment_name)
-                accuracyList.append(accuracy)
+                accuracy_list.append(accuracy)
                 if not no_information_flow:
                     model.set_weights(old_weights) # change the changed weights to the original weights
-            weight = calcWeightProbability(reliability_setting, node_failure_combination)
-            weightList.append(weight)
-        print("Acc List: " + str(accuracyList))
-        output_list.append("Acc List: " + str(accuracyList) + '\n')
+            weight = calc_weight_probability(reliability_setting, node_failure_combination)
+            weight_list.append(weight)
+        print("Acc List: " + str(accuracy_list))
+        output_list.append("Acc List: " + str(accuracy_list) + '\n')
         
-        if needToGetModelAccuracy:
-            modelAccuracyDict[model] = accuracyList # add the accuracyList to the dictionary
-        return accuracyList, weightList
+        if need_calculating_accuracy:
+            model_accuracy_dict[model] = accuracy_list # add the accuracy_list to the dictionary
+        return accuracy_list, weight_list
  
-    def calculateExpectedAccuracy(self,
+    def calc_expected_accuracy(self,
                                 model,
                                 no_information_flow_map,
                                 reliability_setting,
@@ -174,48 +191,64 @@ class accuracy:
                                 training_labels = None,
                                 test_data = None,
                                 test_labels = None,
-                                test_generator = None, # for imageNet
-                                num_test_examples = None # for imageNet
+                                test_generator = None, 
+                                num_test_examples = None 
                                 ):
-        """Calculates the expected accuracy of the model under certain reliability setting
-        ### Arguments
+        """Calculates the expected accuracy of the model under a reliability setting
+
+        Args:
             model (Model): Keras model
+            no_information_flow_map (dictionary): a dictionary that maps from a 
+                certain node failure combination to a boolean, showing if that
+                node failure combination has an accessible path of information
+                to the cloud.
             reliability_setting (list): List of the reliability rate of all nodes
             output_list (list): list that contains string output of the experiment
-            training_labels (numpy array): 1D array that corresponds to each row in the training data with a class label, used for calculating train class distributio
-            test_data (numpy array): 2D array that contains the test data, assumes that each column is a variable and that each row is a test example
-            test_labels (numpy array): 1D array that corresponds to each row in the test data with a class label
-        ### Returns
+            training_labels (numpy array): 1D array that corresponds to each row in
+                the training data with a class label, used for calculating train 
+                class distributio
+            test_data (numpy array): 2D array that contains the test data, assumes 
+                that each column is a variable and that each row is a test example
+            test_labels (numpy array): 1D array that corresponds to each row in the 
+                test data with a class label
+            test_generator (generator): a generator for test data (for imagenet)
+            num_test_examples (int): number of test examples (for imagenet)
+        Returns:
             return weighted accuracy 
         """  
-        numNodes = len(reliability_setting)
-        accuracyList, weightList = self.iterateAllFailureCombinationsCalcAccuracy(reliability_setting,numNodes, model,no_information_flow_map,output_list,training_labels,test_data,test_labels, test_generator, num_test_examples)
-        weightList = normalize(weightList)
-        avg_acc = calcWeightedAverage(accuracyList, weightList)
-        # output_list.append('Times we had no information flow: ' + str(no_information_flow_count) + '\n')
-        output_list.append('Average Accuracy: ' + str(avg_acc) + '\n')
-        # print('Times we had no information flow: ',str(no_information_flow_count))
-        print("Average Accuracy:", avg_acc)
+        num_nodes = len(reliability_setting)
+        accuracy_list, weight_list = self.iterate_failure_combinations(reliability_setting,num_nodes, model,no_information_flow_map,output_list,training_labels,test_data,test_labels, test_generator, num_test_examples)
+        weight_list = normalize(weight_list)
+        avg_acc = calc_weighted_average(accuracy_list, weight_list)
+        output_list.append('Average accuracy: ' + str(avg_acc) + '\n')
+        print("Average accuracy:", avg_acc)
         return avg_acc
 
-def calcWeightedAverage(valueList, weightList):
+def calc_weighted_average(valueList, weight_list):
     """calculates weighted average 
-    ### Arguments
+
+    Args:
         valueList (list): list of all the values
-        weightList (list): list of all weights (probabilities) of those values
-    ### Returns
-        return weighted average 
+        weight_list (list): list of all weights (probabilities) of those values
+    
+    Returns:
+        return the weighted average 
     """  
     average = 0
     for i in range(len(valueList)):
-        average += valueList[i] * weightList[i]
+        average += valueList[i] * weight_list[i]
     return average
         
-def calcWeightProbability(reliability_setting, node_failure_combination):
+def calc_weight_probability(reliability_setting, node_failure_combination):
     """calculates the weight (probability) of each combination of node failures
-    ### Arguments
+    
+    Args:
         reliability_setting (list): list of probabilities
-    ### Returns
+        node_failure_combination (list): bit list that corresponds 
+            to the node failure combination, 1 in the list represents 
+            to alive and 0 corresponds to dead. they are ordered from 
+            top to down, left to right
+    Returns:
         return probability of a particular node failure combination
     """  
     weight = 1
@@ -227,11 +260,14 @@ def calcWeightProbability(reliability_setting, node_failure_combination):
     return weight
     
 
-def calcNumSurvivedNodes(number):
-    """calculates the number of survived physical nodes by counting ones in a bit string
-    ### Arguments
+def calc_num_survived_nodes(number):
+    """calculates the number of survived physical nodes by counting ones 
+        in a bit string
+    
+    Args:
         number (int): number to be converted to binary
-    ### Returns
+    
+    Returns:
         return number of survived nodes
     """  
     # convert given number into binary
@@ -245,9 +281,11 @@ def calcNumSurvivedNodes(number):
 
 def normalize(weights):
     """Normalizes the elements of a list, so that they sum to 1
-    ### Arguments
+
+    Args:
        weights(list): list of all the probability weights
-    ### Returns
+    
+    Returns:
         return normalized lost of probability weights
     """  
     sumWeights = sum(weights)

@@ -9,7 +9,7 @@ import keras.backend as K
 import keras.layers as layers
 from keras_applications.imagenet_utils import _obtain_input_shape
 from Experiment.MobileNet_blocks import _conv_block, _depthwise_conv_block
-from Experiment.common_exp_methods import compile_keras_parallel_model
+from Experiment.common import compile_keras_parallel_model
 
 PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->3->5->5. ARCHITECTURE TWO: 2->2->4->6. 
 

@@ -12,7 +12,7 @@ from keras.backend import constant
 import random 
 import keras.layers as layers
 
-from Experiment.Custom_Layers import Failout, InputMux
+from Experiment.custom_layers import Failout, InputMux
 
 MUX_ADDS = False
 

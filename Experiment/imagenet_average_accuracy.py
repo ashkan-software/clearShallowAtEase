@@ -1,14 +1,14 @@
 
-from Experiment.utility_define_models_CNN import define_model
-from Experiment.Accuracy import accuracy
-from Experiment.common_exp_methods_CNN_imagenet import init_data, init_common_experiment_params, get_model_weights_CNN_imagenet
-from Experiment.common_exp_methods import average, convert_to_string, make_output_dictionary_average_accuracy, make_results_folder,write_n_upload
+from Experiment.common_CNN import define_model
+from Experiment.accuracy import accuracy
+from Experiment.common_CNN_imagenet import init_data, init_common_experiment_params, get_model_weights_CNN_imagenet
+from Experiment.common import average, convert_to_string, make_output_dictionary_average_accuracy, make_results_folder,write_n_upload
 import keras.backend as K
 import datetime
 import gc
 import os
 import numpy as np
-from Experiment.common_exp_methods import make_no_information_flow_map
+from Experiment.common import make_no_information_flow_map
 from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 
 import tensorflow as tf
@@ -20,13 +20,13 @@ def define_and_train(iteration, model_name, load_for_inference, continue_trainin
 def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples):
     output_list.append(model_name + "\n")
     print(model_name)
-    output[model_name][str(reliability_setting)][iteration-1] = calculateExpectedAccuracy(model,no_information_flow_map,reliability_setting,output_list,test_generator= test_generator,num_test_examples = num_test_examples)
+    output[model_name][str(reliability_setting)][iteration-1] = calc_expected_accuracy(model,no_information_flow_map,reliability_setting,output_list,test_generator= test_generator,num_test_examples = num_test_examples)
 
 
 # runs all 3 failure configurations for all 3 models
 if __name__ == "__main__":
     accuracy = accuracy("Imagenet")
-    calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
+    calc_expected_accuracy = accuracy.calc_expected_accuracy
     use_GCP = False
     num_iterations,num_train_examples,num_test_examples, reliability_settings, input_shape, num_classes, alpha, epochs, num_gpus, strides, num_workers = init_common_experiment_params()
     train_generator, test_generator = init_data(use_GCP, num_gpus) 
@@ -118,17 +118,17 @@ if __name__ == "__main__":
         # deepFogGuard_std = np.std(output["deepFogGuard"][str(reliability_setting)],ddof = 1)
         # Vanilla_std = np.std(output["Vanilla"][str(reliability_setting)],ddof = 1)
 
-        output_list.append(str(reliability_setting) + " ResiliNet Accuracy: " + str(ResiliNet_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " deepFogGuard Accuracy: " + str(deepFogGuard_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " Vanilla Accuracy: " + str(Vanilla_acc) + '\n')
+        output_list.append(str(reliability_setting) + " ResiliNet accuracy: " + str(ResiliNet_acc) + '\n')
+        # output_list.append(str(reliability_setting) + " deepFogGuard accuracy: " + str(deepFogGuard_acc) + '\n')
+        # output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
 
         output_list.append(str(reliability_setting) + " ResiliNet std: " + str(ResiliNet_std) + '\n')
         # output_list.append(str(reliability_setting) + " deepFogGuard std: " + str(deepFogGuard_std) + '\n')
         # output_list.append(str(reliability_setting) + " Vanilla std: " + str(Vanilla_std) + '\n')
 
-        print(str(reliability_setting),"ResiliNet Accuracy:",ResiliNet_acc)
-        # print(str(reliability_setting),"deepFogGuard Accuracy:",deepFogGuard_acc)
-        # print(str(reliability_setting),"Vanilla Accuracy:",Vanilla_acc)
+        print(str(reliability_setting),"ResiliNet accuracy:",ResiliNet_acc)
+        # print(str(reliability_setting),"deepFogGuard accuracy:",deepFogGuard_acc)
+        # print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
 
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
         # print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)

@@ -10,7 +10,7 @@ import keras.backend as K
 import keras.layers as layers
 from keras_applications.imagenet_utils import _obtain_input_shape
 from Experiment.ResNet_blocks import _handle_dim_ordering, basic_block, _string_to_function, bottleneck, _bn_relu_conv, _conv_bn_relu, _residual_block, _bn_relu
-from Experiment.common_exp_methods import compile_keras_parallel_model
+from Experiment.common import compile_keras_parallel_model
 
 PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->4->4->9. ARCHITECTURE TWO: 1->8->4->5. 
 
@@ -18,7 +18,7 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='basic', resid
                             repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                             input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                             initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                            final_pooling=None, top='classification', num_gpus = 1):
+                            final_pooling=None, top='evaluation', num_gpus = 1):
     """Builds a custom ResNet18 architecture.
     Args:
         input_shape: optional shape tuple, only to be specified
@@ -63,7 +63,7 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='basic', resid
             - `max` means that global max pooling will
                 be applied.
         top: Defines final layers to evaluate based on a specific problem type. Options
-            are 'classification' for ImageNet style problems, 'segmentation' for
+            are 'evaluation' for ImageNet style problems, 'segmentation' for
             problems like the Pascal VOC dataset, and None to exclude these layers
             entirely.
     Returns:
@@ -164,7 +164,7 @@ def define_cnn_architecture_cloud(fog_output, r1, r2, transition_dilation_rate, 
       # Last activation
     cloud = _bn_relu(cloud)
     # Classifier block
-    if include_top and top is 'classification':
+    if include_top and top is 'evaluation':
         cloud = layers.GlobalAveragePooling2D()(cloud)
         cloud = layers.Dense(units=classes, activation=activation,
                   kernel_initializer="he_normal")(cloud)

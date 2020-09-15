@@ -1,15 +1,15 @@
 
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
-from Experiment.common_exp_methods_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
-from Experiment.Accuracy import accuracy
-from Experiment.common_exp_methods import average, convert_to_string, write_n_upload, make_results_folder
+from Experiment.common_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
+from Experiment.accuracy import accuracy
+from Experiment.common import average, convert_to_string, write_n_upload, make_results_folder
 import keras.backend as K
 import os
 import gc 
 from keras.callbacks import ModelCheckpoint
 import numpy as np
-from Experiment.common_exp_methods import make_no_information_flow_map
+from Experiment.common import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
 
 def make_output_dictionary(model_name, reliability_settings, num_iterations, skip_hyperconnection_configurations):
@@ -86,12 +86,12 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
 def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliability_setting, skip_hyperconnection_configuration, output_list,training_labels,test_data,test_labels):
     output_list.append(model_name + str(skip_hyperconnection_configuration)+ '\n')
     print(model_name+ str(skip_hyperconnection_configuration))
-    output[model_name][str(reliability_setting)][str(skip_hyperconnection_configuration)][iteration-1] = calculateExpectedAccuracy(model, no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
+    output[model_name][str(reliability_setting)][str(skip_hyperconnection_configuration)][iteration-1] = calc_expected_accuracy(model, no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
 
 
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
-    calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
+    calc_expected_accuracy = accuracy.calc_expected_accuracy
     use_GCP = False
     training_data,val_data, test_data, training_labels,val_labels,test_labels = init_data(use_GCP)
 
@@ -145,8 +145,8 @@ if __name__ == "__main__":
             acc = average(output[model_name][str(reliability_setting)][str(skip_hyperconnection_configuration)])
             std = np.std(output[model_name][str(reliability_setting)][str(skip_hyperconnection_configuration)],ddof=1)
             # write to output list
-            output_list.append(str(reliability_setting) + " " + str(skip_hyperconnection_configuration) + " Accuracy: " + str(acc) + '\n')
-            print(str(reliability_setting),str(skip_hyperconnection_configuration),"Accuracy:",acc)
+            output_list.append(str(reliability_setting) + " " + str(skip_hyperconnection_configuration) + " accuracy: " + str(acc) + '\n')
+            print(str(reliability_setting),str(skip_hyperconnection_configuration),"accuracy:",acc)
             output_list.append(str(reliability_setting) + " " + str(skip_hyperconnection_configuration) + " std: " + str(std) + '\n')
             print(str(reliability_setting),str(skip_hyperconnection_configuration),"std:",std)
     

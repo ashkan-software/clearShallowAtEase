@@ -5,9 +5,9 @@ from keras import optimizers
 from keras.utils import multi_gpu_model
 import keras
 import tensorflow as tf
-from Experiment.Graph import fail_node_graph, identify_no_information_flow_graph
+from Experiment.graph import fail_node_graph, identify_no_information_flow_graph
 import copy
-from Experiment.Graph import create_graph_MLP_camera, create_graph_MLP_health, create_graph_CNN
+from Experiment.graph import create_graph_MLP_camera, create_graph_MLP_health, create_graph_CNN
 
 def make_results_folder():
     # makes folder for results and models (if they don't exist)
@@ -177,24 +177,24 @@ def compile_keras_parallel_model(input, cloud_output, num_gpus, name='ANRL_mobil
 def make_no_information_flow_map(exp, skip_hyperconnection_config = None):
     if exp == "CIFAR/Imagenet" or  exp == "ResNet":
         graph = create_graph_CNN(skip_hyperconnection_config)
-        numNodes = 2
+        num_nodes = 2
     if exp == "Health":
         graph = create_graph_MLP_health(skip_hyperconnection_config)
-        numNodes = 3
+        num_nodes = 3
     if exp == "Camera":
         graph = create_graph_MLP_camera(skip_hyperconnection_config)
-        numNodes = 8
-    maxNumNodeFailure = 2 ** numNodes
+        num_nodes = 8
+    max_node_failures = 2 ** num_nodes
     no_information_flow_map = {} # make a dictionary
-    for i in range(maxNumNodeFailure):
-        node_failure_combination = convertBinaryToList(i, numNodes)
+    for i in range(max_node_failures):
+        node_failure_combination = convert_binary_to_list(i, num_nodes)
         graph_copy = copy.deepcopy(graph) # make a new copy of the graph
         fail_node_graph(graph_copy, node_failure_combination, exp)
         no_information_flow_map[tuple(node_failure_combination)] = identify_no_information_flow_graph(graph_copy, exp)
         del graph_copy
     return no_information_flow_map
 
-def convertBinaryToList(number, numBits):
+def convert_binary_to_list(number, numBits):
     """converts a number (e.g. 128) to its binary representation in a list. It converts number 128 to [1,0,0,0,0,0,0,0]    
     ### Arguments
         number (int): number to be converted to binary

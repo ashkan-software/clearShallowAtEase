@@ -26,6 +26,30 @@ class CustomModelCheckpoint(Callback):
         print("\nSaving model to : {}".format(self.path.format(epoch=epoch, val_loss=loss)))
         self.model_for_saving.save_weights(self.path.format(epoch=epoch, val_loss=loss), overwrite=True)
 
+train_datagen = ImageDataGenerator(
+    rotation_range=30,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True,
+)
+reliability_settings = [
+    [1,1],
+    [.98,.96],
+    [.95,.90],
+    [.85,.80],
+]
+strides = (1,1)
+num_iterations = 1
+batch_size = 128
+epochs = 75
+progress_verbose = 1
+checkpoint_verbose = 1
+use_GCP = False
+alpha = .75
+input_shape = (32,32,3)
+classes = 10
+num_gpus = 1
+
 def init_data():
     # get cifar10 data 
     (training_data, training_labels), (test_data, test_labels) = cifar10.load_data()
@@ -40,32 +64,6 @@ def init_data():
     training_data, test_data, training_labels, test_labels = train_test_split(data,labels,random_state = 42, test_size = .20, shuffle = True)
     val_data, test_data, val_labels, test_labels = train_test_split(test_data,test_labels,random_state = 42, test_size = .50, shuffle = True)
     return  training_data, test_data, training_labels, test_labels, val_data, val_labels
-
-def init_common_experiment_params():
-    train_datagen = ImageDataGenerator(
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        horizontal_flip=True,
-    )
-    reliability_settings = [
-        [1,1],
-        [.98,.96],
-        [.95,.90],
-        [.85,.80],
-    ]
-    strides = (1,1)
-    num_iterations = 1
-    batch_size = 128
-    epochs = 75
-    progress_verbose = 1
-    checkpoint_verbose = 1
-    use_GCP = False
-    alpha = .75
-    input_shape = (32,32,3)
-    classes = 10
-    num_gpus = 1
-    return num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus
 
 def get_model_weights_CNN_cifar(model, parallel_model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
     if load_for_inference:

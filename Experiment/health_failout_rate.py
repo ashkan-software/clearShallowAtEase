@@ -1,13 +1,13 @@
 from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
-from Experiment.Accuracy import accuracy
-from Experiment.common_exp_methods_MLP_health import init_data, init_common_experiment_params, get_model_weights_MLP_health
-from Experiment.common_exp_methods import average, convert_to_string, write_n_upload,  make_results_folder, make_output_dictionary_failout_rate, make_output_dictionary_failout_rate
+from Experiment.accuracy import accuracy
+from Experiment.common_MLP_health import init_data, init_common_experiment_params, get_model_weights_MLP_health
+from Experiment.common import average, convert_to_string, write_n_upload,  make_results_folder, make_output_dictionary_failout_rate, make_output_dictionary_failout_rate
 import keras.backend as K
 import gc
 import os
 from keras.callbacks import ModelCheckpoint
 import numpy as np
-from Experiment.common_exp_methods import make_no_information_flow_map
+from Experiment.common import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, failout_survival_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
@@ -36,7 +36,7 @@ def multiply_hyperconnection_weights(dropout_like_failout, failout_survival_sett
 # runs all 3 failure configurations for all 3 models
 if __name__ == "__main__":
     accuracy = accuracy("Health")
-    calculateExpectedAccuracy = accuracy.calculateExpectedAccuracy
+    calc_expected_accuracy = accuracy.calc_expected_accuracy
     use_GCP = False
     training_data, val_data, test_data, training_labels, val_labels, test_labels = init_data(use_GCP)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
                 continue 
             ResiliNet_failout_rate_variable = define_and_train(iteration, "Variable Failout 1x", load_for_inference, reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
             multiply_hyperconnection_weights(dropout_like_failout, reliability_setting, ResiliNet_failout_rate_variable)
-            output["Variable Failout 1x"][str(reliability_setting)][iteration-1] = calculateExpectedAccuracy(ResiliNet_failout_rate_variable,no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
+            output["Variable Failout 1x"][str(reliability_setting)][iteration-1] = calc_expected_accuracy(ResiliNet_failout_rate_variable,no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
         
             # clear session so that model will recycled back into memory
             K.clear_session()
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             for reliability_setting in reliability_settings:
                 output_list.append(str(reliability_setting)+ '\n')
                 print(reliability_setting)
-                output[str(failout_survival_setting)][str(reliability_setting)][iteration-1] = calculateExpectedAccuracy(ResiliNet_failout_rate_fixed,no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
+                output[str(failout_survival_setting)][str(reliability_setting)][iteration-1] = calc_expected_accuracy(ResiliNet_failout_rate_fixed,no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
             # clear session so that model will recycled back into memory
             K.clear_session()
             gc.collect()
