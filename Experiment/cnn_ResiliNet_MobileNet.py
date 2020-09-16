@@ -13,7 +13,7 @@ from keras.layers import Lambda
 from Experiment.cnn_deepFogGuard_MobileNet import define_cnn_deepFogGuard_architecture_IoT, define_cnn_deepFogGuard_architecture_edge
 from Experiment.common_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers, cnn_failout_definitions
 from Experiment.cnn_Vanilla_MobileNet import imagenet_related_functions, define_cnn_architecture_cloud, define_cnn_architecture_fog
-from Experiment.custom_layers import InputMux
+from Experiment.custom_ops import InputMux
 from Experiment.common import compile_keras_parallel_model
 from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
 

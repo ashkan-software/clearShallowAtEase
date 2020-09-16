@@ -1,4 +1,4 @@
-from Experiment.custom_layers import Failout
+from Experiment.custom_ops import Failout
 import keras.layers as layers
 import random
 from Experiment.cnn_Vanilla_MobileNet import define_vanilla_CNN_MobileNet
@@ -19,7 +19,7 @@ def define_model(iteration, model_name, dataset_name, input_shape, classes, alph
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                 initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                final_pooling=None, top='evaluation',
+                                final_pooling=None, top='classification',
                                 num_gpus = num_gpus)
         else:
             mux_adds_str = "mux_adds" if MUX_ADDS_MobileNet else "" 
@@ -32,7 +32,7 @@ def define_model(iteration, model_name, dataset_name, input_shape, classes, alph
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                    final_pooling=None, top='evaluation', num_gpus = num_gpus)
+                                    final_pooling=None, top='classification', num_gpus = num_gpus)
         else:
             model, parallel_model = define_deepFogGuard_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, strides = strides, num_gpus=num_gpus, weights=weights)
         model_file =  "models/"+ dataset_name  + str(iteration) + 'average_accuracy_deepFogGuard.h5'
@@ -43,7 +43,7 @@ def define_model(iteration, model_name, dataset_name, input_shape, classes, alph
                             repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                             input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                             initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                            final_pooling=None, top='evaluation', num_gpus = num_gpus)
+                            final_pooling=None, top='classification', num_gpus = num_gpus)
         else:
             model, parallel_model = define_vanilla_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, strides = strides, num_gpus=num_gpus, weights=weights)
         model_file = "models/" + dataset_name  + str(iteration) + 'average_accuracy_vanilla.h5'

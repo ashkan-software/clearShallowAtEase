@@ -66,7 +66,7 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                    final_pooling=None, top='evaluation',
+                                    final_pooling=None, top='classification',
                                     skip_hyperconnection_config = skip_hyperconnection_configuration, # binary representating if a skip hyperconnection is alive [e1,IoT]
                                     reliability_setting=reliability_setting, # reliability of a node between 0 and 1 [f1,e1]
                                     hyperconnection_weights_scheme = 1,
@@ -78,7 +78,7 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                 initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                final_pooling=None, top='evaluation',
+                                final_pooling=None, top='classification',
                                 failout_survival_setting = [.95,.95],
                                 skip_hyperconnection_config = skip_hyperconnection_configuration, 
                                 reliability_setting=reliability_setting, 

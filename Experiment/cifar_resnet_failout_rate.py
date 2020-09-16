@@ -21,7 +21,7 @@ def define_and_train(iteration, model_name, load_for_inference, failout_survival
                                 repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                 input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                 initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                final_pooling=None, top='evaluation',
+                                final_pooling=None, top='classification',
                                 failout_survival_setting = failout_survival_setting,
                                 skip_hyperconnection_config = default_skip_hyperconnection_config, 
                                 num_gpus = num_gpus) 

@@ -18,7 +18,7 @@ def define_deepFogGuard_CNN_ResNet(input_shape=None, classes=10, block='basic', 
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
-                                    final_pooling=None, top='evaluation',
+                                    final_pooling=None, top='classification',
                                     skip_hyperconnection_config = default_skip_hyperconnection_config, # binary representating if a skip hyperconnection is alive [e1,IoT]
                                     reliability_setting=[1.0,1.0], # reliability of a node between 0 and 1 [f1,e1]
                                     hyperconnection_weights_scheme = 1,
