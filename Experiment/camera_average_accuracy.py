@@ -4,7 +4,7 @@ from Experiment.mlp_DFG_camera import define_DFG_MLP
 from Experiment.mlp_Vanilla_camera import define_vanilla_model_MLP
 from Experiment.accuracy import accuracy
 from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
-from Experiment.common import write_n_upload, average
+from Experiment.common import save_output, average
 from Experiment.common import convert_to_string, make_output_dictionary_average_accuracy
 import keras.backend as K
 import datetime
@@ -110,5 +110,5 @@ if __name__ == "__main__":
         print(str(reliability_setting),"DFG std:",DFG_std)
         print(str(reliability_setting),"Vanilla std:",Vanilla_std)
 
-    write_n_upload(output_name, output_list)
+    save_output(output_name, output_list)
     print(output)

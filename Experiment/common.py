@@ -16,7 +16,7 @@ def make_results_folder():
     if not os.path.exists('models'):      
         os.mkdir('models/')
 
-def write_n_upload(output_name, output_list):
+def save_output(output_name, output_list):
     # write experiments output to file
     with open(output_name,'w') as file:
         file.writelines(output_list)
@@ -144,10 +144,12 @@ def make_output_dictionary_failout_rate(failout_survival_rates, reliability_sett
 
 def average(list):
     """function to return average of a list 
-    ### Arguments
+
+    Args:
         list (list): list of numbers
-    ### Returns
-        return sum of list
+    
+    Returns:
+        return average of list
     """
     if len(list) == 0:
         return 0
@@ -192,10 +194,12 @@ def make_no_information_flow_map(exp, skip_hyperconnection_config = None):
 
 def convert_binary_to_list(number, numBits):
     """converts a number (e.g. 128) to its binary representation in a list. It converts number 128 to [1,0,0,0,0,0,0,0]    
-    ### Arguments
+    
+    Args:
         number (int): number to be converted to binary
         numBits (int): number of maximum bits 
-    ### Returns
+    
+    Returns:
         return binary number to a list representing the binary number
     """  
     # convert given number into binary

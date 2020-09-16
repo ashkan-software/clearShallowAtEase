@@ -8,15 +8,6 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
 def predict(model,no_information_flow,train_labels,test_data,test_labels, experiment_name):
-    """Performs prediction for test data, based on th learned parameters. (Performs random guess if there is no information flow in the DNN)
-    ### Arguments
-        model (Model): Keras model
-        train_labels (numpy array): 1D array that corresponds to each row in the training data with a class label, used for calculating train class distribution
-        test_data (numpy array): 2D array that contains the test data, assumes that each column is a variable and that each row is a test example
-        test_labels (numpy array): 1D array that corresponds to each row in the test data with a class label
-    ### Returns
-        return a tuple of accuracy (as a float) and whether there is no information flow (as an integer)
-    """
     
     if no_information_flow is True:
         if experiment_name == "CIFAR" :
@@ -41,11 +32,13 @@ def predict(model,no_information_flow,train_labels,test_data,test_labels, experi
     return acc,no_information_flow_count
 
 def random_guess(train_labels,test_data):
-    """function returns a array of predictions from random guessing based on training class distribution 
-    ### Arguments
+    """function returns a array of predictions from random guessing based on training class distribution
+
+    Args:
         train_labels (numpy array): 1D array that corresponds to each row in the training data with a class label, used for calculating train class distribution
         test_data (numpy array): 2D array that contains the test data, assumes that each column is a variable and that each row is a test example
-    ### Returns
+    
+    Returns:
         return a 1-D array of predictions, shape is the number of test examples
     """
     # count the frequency of each class
@@ -70,9 +63,11 @@ def random_guess(train_labels,test_data):
 
 def toss_coin(cumulative_frequency):    
     """tosses a coin and determines a class based on the cumulative frequency
-    ### Arguments
+
+    Args:
         cumulative_frequency (list): list of the cumulative frequencies for the class distribution, first value is always 0
-    ### Returns
+    
+    Returns:
         return an int output
     """
     rand_num = random.random()

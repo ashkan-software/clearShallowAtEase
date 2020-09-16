@@ -1,7 +1,7 @@
 from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.accuracy import accuracy
 from Experiment.common_MLP_health import init_data, get_model_weights_MLP_health, num_iterations, num_classes, reliability_settings, num_train_epochs, hidden_units, batch_size
-from Experiment.common import average, convert_to_string, write_n_upload,  make_results_folder, make_output_dictionary_failout_rate, make_output_dictionary_failout_rate
+from Experiment.common import average, convert_to_string, save_output,  make_results_folder, make_output_dictionary_failout_rate, make_output_dictionary_failout_rate
 import keras.backend as K
 import gc
 import os
@@ -110,6 +110,6 @@ if __name__ == "__main__":
             print(str(reliability_setting), "Fixed Failout std:",ResiliNet_failout_rate_std)
 
     # write experiments output to file
-    write_n_upload(output_name, output_list)
+    save_output(output_name, output_list)
     print(output)
 

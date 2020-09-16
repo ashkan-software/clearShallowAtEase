@@ -5,7 +5,8 @@ import tensorflow as tf
 
 class Failout(Layer):
     """Applies Failout to the output of a node.
-    # Arguments
+ 
+    Attributes:
         failout_survival_rate: float between 0 and 1. Probability of survival of a node (1 - prob_failure).
         seed: A Python integer to use as random seed.
     """
@@ -42,8 +43,10 @@ class Failout(Layer):
 class InputMux(Add):
     """
     Input Multiplexer for a node that receives input from more than one downstream nodes, 
-    # Arguments
-        node_has_failed: Boolean Tensor showing if the downstream node has failed
+    
+    Args:
+        mux_adds: Boolean Tensor showing if this operator should do addition (ResiliNet+)
+            or it is doing multiplexing (ResiliNet)
     """
     def __init__(self, mux_adds=False, **kwargs):
         super(InputMux, self).__init__(**kwargs)
@@ -51,9 +54,10 @@ class InputMux(Add):
 
     def _merge_function(self, inputs):
         """
-        # inputs
-        the two incoming connections to a node. inputs[0] MUST be the input from skip hyperconnection
-        and inputs[1] MUST be the input from the node below.
+        Args:
+            inputs: the two incoming connections to a node. inputs[0] 
+                MUST be the input from skip hyperconnection
+                and inputs[1] MUST be the input from the node below.
         """
 
         if self.mux_adds:

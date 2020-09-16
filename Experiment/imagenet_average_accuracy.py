@@ -2,7 +2,7 @@
 from Experiment.common_CNN import define_model
 from Experiment.accuracy import accuracy
 from Experiment.common_CNN_imagenet import init_data, get_model_weights_CNN_imagenet, num_iterations,num_train_examples,num_test_examples, reliability_settings, input_shape, num_classes, alpha, epochs, num_gpus, strides, num_workers
-from Experiment.common import average, convert_to_string, make_output_dictionary_average_accuracy, make_results_folder,write_n_upload
+from Experiment.common import average, convert_to_string, make_output_dictionary_average_accuracy, make_results_folder,save_output
 import keras.backend as K
 import datetime
 import gc
@@ -63,73 +63,73 @@ if __name__ == "__main__":
             strides = strides,
             num_workers = num_workers
             )
-        # DFG = define_and_train(
-        #     iteration = iteration, 
-        #     model_name = "DFG", 
-        #     load_for_inference = load_for_inference, 
-        #     continue_training = continue_training,
-        #     train_generator = train_generator, 
-        #     val_generator = val_generator, 
-        #     input_shape = input_shape, 
-        #     classes = num_classes, 
-        #     alpha = alpha, 
-        #     num_train_examples = num_train_examples,
-        #     epochs = epochs,
-        #     num_gpus = num_gpus,
-        #     strides = strides,
-        #     num_workers = num_workers
-        #     )
-        # Vanilla = define_and_train(
-        #     iteration = iteration, 
-        #     model_name = "Vanilla", 
-        #     load_for_inference = load_for_inference, 
-        #     continue_training = continue_training,
-        #     train_generator = train_generator, 
-        #     val_generator = val_generator, 
-        #     input_shape = input_shape, 
-        #     classes = num_classes, 
-        #     alpha = alpha, 
-        #     num_train_examples = num_train_examples,
-        #     epochs = epochs,
-        #     num_gpus = num_gpus,
-        #     strides = strides,
-        #     num_workers = num_workers
-        #     )
+        DFG = define_and_train(
+            iteration = iteration, 
+            model_name = "DFG", 
+            load_for_inference = load_for_inference, 
+            continue_training = continue_training,
+            train_generator = train_generator, 
+            val_generator = val_generator, 
+            input_shape = input_shape, 
+            classes = num_classes, 
+            alpha = alpha, 
+            num_train_examples = num_train_examples,
+            epochs = epochs,
+            num_gpus = num_gpus,
+            strides = strides,
+            num_workers = num_workers
+            )
+        Vanilla = define_and_train(
+            iteration = iteration, 
+            model_name = "Vanilla", 
+            load_for_inference = load_for_inference, 
+            continue_training = continue_training,
+            train_generator = train_generator, 
+            val_generator = val_generator, 
+            input_shape = input_shape, 
+            classes = num_classes, 
+            alpha = alpha, 
+            num_train_examples = num_train_examples,
+            epochs = epochs,
+            num_gpus = num_gpus,
+            strides = strides,
+            num_workers = num_workers
+            )
         # test models
         for reliability_setting in reliability_settings:
             calc_accuracy(iteration, "ResiliNet", ResiliNet, ResiliNet_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
-            # calc_accuracy(iteration, "DFG", DFG, DFG_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
-            # calc_accuracy(iteration, "Vanilla", Vanilla, Vanilla_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
+            calc_accuracy(iteration, "DFG", DFG, DFG_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
+            calc_accuracy(iteration, "Vanilla", Vanilla, Vanilla_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
             
         # clear session so that model will recycled back into memory
         K.clear_session()
         gc.collect()
-        # del DFG
+        del DFG
         del ResiliNet
-        # del Vanilla
+        del Vanilla
    # calculate average accuracies from all expected accuracies
     for reliability_setting in reliability_settings:
         ResiliNet_acc = average(output["ResiliNet"][str(reliability_setting)])
-        # DFG_acc = average(output["DFG"][str(reliability_setting)])
-        # Vanilla_acc = average(output["Vanilla"][str(reliability_setting)])
+        DFG_acc = average(output["DFG"][str(reliability_setting)])
+        Vanilla_acc = average(output["Vanilla"][str(reliability_setting)])
 
         ResiliNet_std = np.std(output["ResiliNet"][str(reliability_setting)],ddof=1)
-        # DFG_std = np.std(output["DFG"][str(reliability_setting)],ddof = 1)
-        # Vanilla_std = np.std(output["Vanilla"][str(reliability_setting)],ddof = 1)
+        DFG_std = np.std(output["DFG"][str(reliability_setting)],ddof = 1)
+        Vanilla_std = np.std(output["Vanilla"][str(reliability_setting)],ddof = 1)
 
         output_list.append(str(reliability_setting) + " ResiliNet accuracy: " + str(ResiliNet_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " DFG accuracy: " + str(DFG_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
+        output_list.append(str(reliability_setting) + " DFG accuracy: " + str(DFG_acc) + '\n')
+        output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
 
         output_list.append(str(reliability_setting) + " ResiliNet std: " + str(ResiliNet_std) + '\n')
-        # output_list.append(str(reliability_setting) + " DFG std: " + str(DFG_std) + '\n')
-        # output_list.append(str(reliability_setting) + " Vanilla std: " + str(Vanilla_std) + '\n')
+        output_list.append(str(reliability_setting) + " DFG std: " + str(DFG_std) + '\n')
+        output_list.append(str(reliability_setting) + " Vanilla std: " + str(Vanilla_std) + '\n')
 
         print(str(reliability_setting),"ResiliNet accuracy:",ResiliNet_acc)
-        # print(str(reliability_setting),"DFG accuracy:",DFG_acc)
-        # print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
+        print(str(reliability_setting),"DFG accuracy:",DFG_acc)
+        print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
 
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
-        # print(str(reliability_setting),"DFG std:",DFG_std)
-        # print(str(reliability_setting),"Vanilla std:",Vanilla_std)
-    write_n_upload(output_name, output_list)
+        print(str(reliability_setting),"DFG std:",DFG_std)
+        print(str(reliability_setting),"Vanilla std:",Vanilla_std)
+    save_output(output_name, output_list)

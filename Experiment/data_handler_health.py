@@ -7,9 +7,11 @@ from collections import Counter
 
 def load_data(path):
     """reads in text file from a path and returns data and the labels as numpy arrays
-    ### Arguments
+
+    Args:
         path (string): path where file is located to read 
-    ### Returns
+    
+    Returns:
         return [data (numpy), labels (numpy)]
     """  
     file = open(path,'r')
@@ -31,9 +33,11 @@ def load_data(path):
 
 def combine_data(path):
     """combines all the patients into one complete dataset 
-    ### Arguments
+    
+    Args:
         path (string): file path of all the individual logs
-    ### Returns
+    
+    Returns:
         save complete data log locally
     """  
     training_data,training_labels = load_data(path + '1' + '.log')
@@ -49,9 +53,11 @@ def combine_data(path):
 
 def deleteZeros(path):
      """deletes all examples with 0 as class label
-     ### Arguments
+     
+     Args:
         path (string): file path of a log
-     ### Returns
+     
+     Returns:
         save changed log locally
      """  
      f = pd.read_table(path, header=None, delim_whitespace=True)

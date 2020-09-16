@@ -8,7 +8,7 @@ import os
 from Experiment.cnn_DFG_ResNet import define_DFG_CNN_ResNet
 from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet, MUX_ADDS
 from Experiment.accuracy import accuracy
-from Experiment.common import average, make_results_folder, make_output_dictionary_hyperconnection_weight, write_n_upload
+from Experiment.common import average, make_results_folder, make_output_dictionary_hyperconnection_weight, save_output
 from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, alpha, input_shape, strides, num_gpus
 import numpy as np
 import gc
@@ -96,5 +96,5 @@ if __name__ == "__main__":
             std = np.std(output[model_name][weight_scheme][str(reliability_setting)],ddof=1)
             output_list.append(str(reliability_setting) + str(weight_scheme) +  str(std) + '\n')
             print(str(reliability_setting), weight_scheme, std)
-    write_n_upload(output_name, output_list)
+    save_output(output_name, output_list)
     print(output)

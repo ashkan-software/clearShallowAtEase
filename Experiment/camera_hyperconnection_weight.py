@@ -3,7 +3,7 @@ from Experiment.mlp_DFG_camera import define_DFG_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.accuracy import accuracy
 from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
-from Experiment.common import average, convert_to_string, write_n_upload, make_results_folder, make_output_dictionary_hyperconnection_weight
+from Experiment.common import average, convert_to_string, save_output, make_results_folder, make_output_dictionary_hyperconnection_weight
 import keras.backend as K
 import gc
 import os
@@ -77,5 +77,5 @@ if __name__ == "__main__":
             hyperconnection_weight_std = np.std(output[model_name][weight_scheme][str(reliability_setting)],ddof=1)
             output_list.append(str(reliability_setting) + str(weight_scheme) + " "+ model_name +" std: " + str(hyperconnection_weight_std) + '\n')
             print(str(reliability_setting),weight_scheme,model_name,"std:",hyperconnection_weight_std)
-    write_n_upload(output_name, output_list)
+    save_output(output_name, output_list)
     print(output)
