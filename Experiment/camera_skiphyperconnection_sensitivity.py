@@ -1,5 +1,5 @@
 
-from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
+from Experiment.mlp_DFG_camera import define_DFG_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
 from Experiment.accuracy import accuracy
@@ -10,7 +10,7 @@ import gc
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 from Experiment.common import make_no_information_flow_map
-from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_camera import default_skip_hyperconnection_config
 
 def make_output_dictionary(model_name, reliability_settings, num_iterations, skip_hyperconnection_configurations):
     no_failure, normal, poor, hazardous = convert_to_string(reliability_settings)
@@ -73,9 +73,9 @@ def make_output_dictionary(model_name, reliability_settings, num_iterations, ski
     return output
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
-    if model_name == "DeepFogGuard Hyperconnection Weight Sensitivity":
-        model = define_deepFogGuard_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
-        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_deepFogGuard.h5'
+    if model_name == "DFG Hyperconnection Weight Sensitivity":
+        model = define_DFG_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
+        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_DFG.h5'
     else: # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)

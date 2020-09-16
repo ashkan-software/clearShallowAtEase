@@ -43,7 +43,7 @@ def make_output_dictionary_average_accuracy(reliability_settings, num_iterations
             normal:[0] * num_iterations,
             no_failure:[0] * num_iterations,
         }, 
-        "deepFogGuard":
+        "DFG":
         {
             hazardous:[0] * num_iterations,
             poor:[0] * num_iterations,

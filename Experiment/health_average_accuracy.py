@@ -1,6 +1,6 @@
 
 from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
-from Experiment.mlp_deepFogGuard_health import define_deepFogGuard_MLP
+from Experiment.mlp_DFG_health import define_DFG_MLP
 from Experiment.mlp_Vanilla_health import define_vanilla_model_MLP
 from Experiment.accuracy import accuracy
 from Experiment.common_MLP_health import init_data, get_model_weights_MLP_health, num_iterations, num_classes, reliability_settings, num_train_epochs, hidden_units, batch_size
@@ -11,7 +11,7 @@ import gc
 import os
 import numpy as np
 from Experiment.common import make_no_information_flow_map
-from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_health import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
     # ResiliNet
@@ -19,10 +19,10 @@ def define_and_train(iteration, model_name, load_for_inference, training_data, t
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(num_vars,num_classes,hidden_units)
         model_file = 'models/' + "Health" + str(iteration) + mux_adds_str + 'average_accuracy_ResiliNet.h5'
-    # deepFogGuard
-    if model_name == "deepFogGuard":
-        model = define_deepFogGuard_MLP(num_vars, num_classes, hidden_units)
-        model_file = 'models/' + "Health" + str(iteration) + 'average_accuracy_deepFogGuard.h5'
+    # DFG
+    if model_name == "DFG":
+        model = define_DFG_MLP(num_vars, num_classes, hidden_units)
+        model_file = 'models/' + "Health" + str(iteration) + 'average_accuracy_DFG.h5'
     # Vanilla model
     if model_name == "Vanilla":
         model = define_vanilla_model_MLP(num_vars,num_classes,hidden_units)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     training_data, val_data, test_data, training_labels, val_labels, test_labels, num_vars = init_data() 
     
     ResiliNet_no_information_flow_map = make_no_information_flow_map("Health", default_skip_hyperconnection_config)
-    deepFogGuard_no_information_flow_map = make_no_information_flow_map("Health", default_skip_hyperconnection_config)
+    DFG_no_information_flow_map = make_no_information_flow_map("Health", default_skip_hyperconnection_config)
     Vanilla_no_information_flow_map = make_no_information_flow_map("Health")
 
     load_for_inference = False
@@ -65,45 +65,45 @@ if __name__ == "__main__":
         output_list.append('ITERATION ' + str(iteration) +  '\n')
         print("ITERATION ", iteration)
         ResiliNet = define_and_train(iteration, "ResiliNet", load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
-        # deepFogGuard = define_and_train(iteration, "deepFogGuard", load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
+        # DFG = define_and_train(iteration, "DFG", load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
         # Vanilla = define_and_train(iteration, "Vanilla", load_for_inference, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose)
  
         # test models
         for reliability_setting in reliability_settings:
             calc_accuracy(iteration, "ResiliNet", ResiliNet, ResiliNet_no_information_flow_map, reliability_setting, output_list,training_labels,test_data,test_labels)
-            # calc_accuracy(iteration, "deepFogGuard", deepFogGuard, deepFogGuard_no_information_flow_map, reliability_setting, output_list,training_labels,test_data,test_labels)
+            # calc_accuracy(iteration, "DFG", DFG, DFG_no_information_flow_map, reliability_setting, output_list,training_labels,test_data,test_labels)
             # calc_accuracy(iteration, "Vanilla", Vanilla, Vanilla_no_information_flow_map, reliability_setting, output_list,training_labels,test_data,test_labels)
             
         # clear session so that model will recycled back into memory
         K.clear_session()
         gc.collect()
-        # del deepFogGuard
+        # del DFG
         del ResiliNet
         # del Vanilla
    # calculate average accuracies from all expected accuracies
     for reliability_setting in reliability_settings:
         ResiliNet_acc = average(output["ResiliNet"][str(reliability_setting)])
-        # deepFogGuard_acc = average(output["deepFogGuard"][str(reliability_setting)])
+        # DFG_acc = average(output["DFG"][str(reliability_setting)])
         # Vanilla_acc = average(output["Vanilla"][str(reliability_setting)])
 
         output_list.append(str(reliability_setting) + " ResiliNet accuracy: " + str(ResiliNet_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " deepFogGuard accuracy: " + str(deepFogGuard_acc) + '\n')
+        # output_list.append(str(reliability_setting) + " DFG accuracy: " + str(DFG_acc) + '\n')
         # output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
 
         print(str(reliability_setting),"ResiliNet accuracy:",ResiliNet_acc)
-        # print(str(reliability_setting),"deepFogGuard accuracy:",deepFogGuard_acc)
+        # print(str(reliability_setting),"DFG accuracy:",DFG_acc)
         # print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
 
         ResiliNet_std = np.std(output["ResiliNet"][str(reliability_setting)],ddof=1)
-        # deepFogGuard_std = np.std(output["deepFogGuard"][str(reliability_setting)],ddof=1)
+        # DFG_std = np.std(output["DFG"][str(reliability_setting)],ddof=1)
         # Vanilla_std = np.std(output["Vanilla"][str(reliability_setting)],ddof=1)
 
         output_list.append(str(reliability_setting) + " ResiliNet std: " + str(ResiliNet_std) + '\n')
-        # output_list.append(str(reliability_setting) + " deepFogGuard std: " + str(deepFogGuard_std) + '\n')
+        # output_list.append(str(reliability_setting) + " DFG std: " + str(DFG_std) + '\n')
         # output_list.append(str(reliability_setting) + " Vanilla std: " + str(Vanilla_std) + '\n')
 
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
-        # print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)
+        # print(str(reliability_setting),"DFG std:",DFG_std)
         # print(str(reliability_setting),"Vanilla std:",Vanilla_std)
 
     write_n_upload(output_name, output_list)

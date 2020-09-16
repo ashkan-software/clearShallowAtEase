@@ -2,10 +2,10 @@ from keras.models import Sequential
 from keras.layers import Dense,Input,Lambda, Activation, add
 import keras.backend as K
 import keras.layers as layers
-from Experiment.mlp_deepFogGuard_camera import define_MLP_deepFogGuard_architecture_edge, define_MLP_deepFogGuard_architecture_fog3, define_MLP_deepFogGuard_architecture_fog4
+from Experiment.mlp_DFG_camera import define_MLP_DFG_architecture_edge, define_MLP_DFG_architecture_fog3, define_MLP_DFG_architecture_fog4
 from Experiment.mlp_Vanilla_camera import define_MLP_architecture_cloud, define_MLP_architecture_fog_with_two_layers
-from Experiment.mlp_deepFogGuard_camera import connection_ends, set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
-from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_camera import connection_ends, set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers
+from Experiment.mlp_DFG_camera import default_skip_hyperconnection_config
 
 from keras.models import Model
 from keras.backend import constant
@@ -23,18 +23,6 @@ def define_ResiliNet_MLP(input_shape,
                             reliability_setting = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0], 
                             skip_hyperconnection_config = default_skip_hyperconnection_config, 
                             hyperconnection_weights_scheme = 1):
-    """Define a ResiliNet model.
-    ### Naming Convention
-        ex: f2f1 = connection between fog node 2 and fog node 1
-    ### Arguments
-        num_vars (int): specifies number of variables from the data, used to determine input size.
-        num_classes (int): specifies number of classes to be outputted by the model
-        hidden_units (int): specifies number of hidden units per layer in network
-        failout_survival_setting (list): specifies the failout survival rate of each node in the network
-        skip_hyperconnections (list): specifies the alive skip hyperconnections in the network, default value is [1,1,1]
-    ### Returns
-        Keras Model object
-    """
 
     hyperconnection_weight = {} # define the hyperconnection_weight as dictionary
 
@@ -113,13 +101,13 @@ def MLP_failout_definitions(failout_survival_setting):
     return edge_failout_lambda, fog_failout_lambda
 
 def define_MLP_ResiliNet_architecture_edge(edge_input, hidden_units, output_layer_name):
-    return define_MLP_deepFogGuard_architecture_edge(edge_input, hidden_units, output_layer_name)
+    return define_MLP_DFG_architecture_edge(edge_input, hidden_units, output_layer_name)
 
 def define_MLP_ResiliNet_architecture_fog4(edge2_output, edge3_output, edge4_output, hidden_units, multiply_hyperconnection_weight_layer):
-    return define_MLP_deepFogGuard_architecture_fog4(edge2_output, edge3_output, edge4_output, hidden_units, multiply_hyperconnection_weight_layer)
+    return define_MLP_DFG_architecture_fog4(edge2_output, edge3_output, edge4_output, hidden_units, multiply_hyperconnection_weight_layer)
 
 def define_MLP_ResiliNet_architecture_fog3(edge1_output, hidden_units, multiply_hyperconnection_weight_layer):
-    return define_MLP_deepFogGuard_architecture_fog3(edge1_output, hidden_units, multiply_hyperconnection_weight_layer)
+    return define_MLP_DFG_architecture_fog3(edge1_output, hidden_units, multiply_hyperconnection_weight_layer)
 
 def define_MLP_ResiliNet_architecture_fog2(edge1_output, edge2_output, edge3_output, edge4_output, fog3_output, fog4_output, hidden_units, multiply_hyperconnection_weight_layer = None):
     if multiply_hyperconnection_weight_layer == None or multiply_hyperconnection_weight_layer["e1f2"] == None or multiply_hyperconnection_weight_layer["e2f2"] == None or multiply_hyperconnection_weight_layer["e3f2"] == None or multiply_hyperconnection_weight_layer["e4f2"] == None or multiply_hyperconnection_weight_layer["f3f2"] == None or multiply_hyperconnection_weight_layer["f4f2"] == None:

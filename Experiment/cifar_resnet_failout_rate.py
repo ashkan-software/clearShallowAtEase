@@ -12,7 +12,7 @@ from Experiment.common import average, make_results_folder, make_output_dictiona
 import numpy as np
 import gc
 from Experiment.common import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard_ResNet import default_skip_hyperconnection_config
+from Experiment.cnn_DFG_ResNet import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, failout_survival_setting, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
     mux_adds_str = "mux_adds" if MUX_ADDS else "" 

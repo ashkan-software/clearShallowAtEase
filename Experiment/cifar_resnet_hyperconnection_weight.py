@@ -5,7 +5,7 @@ from keras.callbacks import ModelCheckpoint
 import keras.backend as K
 import math
 import os 
-from Experiment.cnn_deepFogGuard_ResNet import define_deepFogGuard_CNN_ResNet
+from Experiment.cnn_DFG_ResNet import define_DFG_CNN_ResNet
 from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet, MUX_ADDS
 from Experiment.accuracy import accuracy
 from Experiment.common import average, make_results_folder, make_output_dictionary_hyperconnection_weight, write_n_upload
@@ -13,12 +13,12 @@ from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, 
 import numpy as np
 import gc
 from Experiment.common import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard_ResNet import default_skip_hyperconnection_config
+from Experiment.cnn_DFG_ResNet import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, weight_scheme, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
-    if model_name == "DeepFogGuard Hyperconnection Weight":
-        model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_resnet_hyperconnection_deepFogGuard.h5'
-        model, parallel_model = define_deepFogGuard_CNN_ResNet(input_shape=input_shape, classes=classes, block='basic', residual_unit='v2',
+    if model_name == "DFG Hyperconnection Weight":
+        model_file = 'models/' + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'cifar_resnet_hyperconnection_DFG.h5'
+        model, parallel_model = define_DFG_CNN_ResNet(input_shape=input_shape, classes=classes, block='basic', residual_unit='v2',
                                     repetitions=[2, 2, 2, 2], initial_filters=64, activation='softmax', include_top=True,
                                     input_tensor=None, dropout=None, transition_dilation_rate=(1, 1),
                                     initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',

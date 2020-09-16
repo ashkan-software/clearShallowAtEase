@@ -9,12 +9,12 @@ import keras.backend as K
 import keras.layers as layers
 from keras.layers import Lambda
 
-from Experiment.cnn_deepFogGuard_ResNet import define_cnn_deepFogGuard_architecture_IoT, define_cnn_deepFogGuard_architecture_edge, init_model
+from Experiment.cnn_DFG_ResNet import define_cnn_DFG_architecture_IoT, define_cnn_DFG_architecture_edge, init_model
 from Experiment.common_CNN import set_hyperconnection_weights, define_hyperconnection_weight_lambda_layers, cnn_failout_definitions
 from Experiment.cnn_Vanilla_ResNet import define_cnn_architecture_cloud, define_cnn_architecture_fog
 from Experiment.custom_ops import InputMux
 from Experiment.common import compile_keras_parallel_model
-from Experiment.cnn_deepFogGuard_ResNet import default_skip_hyperconnection_config
+from Experiment.cnn_DFG_ResNet import default_skip_hyperconnection_config
 
 MUX_ADDS = False
 
@@ -63,11 +63,11 @@ def define_ResiliNet_CNN_ResNet(input_shape=None, classes=10, block='basic', res
     return model, parallel_model
 
 def define_cnn_ResiliNet_architecture_IoT(img_input, initial_filters, initial_kernel_size, initial_strides):
-    iot_output, skip_iotfog = define_cnn_deepFogGuard_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides)
+    iot_output, skip_iotfog = define_cnn_DFG_architecture_IoT(img_input,initial_filters, initial_kernel_size, initial_strides)
     return iot_output, skip_iotfog
 
 def define_cnn_ResiliNet_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe, edge_failout_lambda):
-    edge_output, skip_edgecloud, filters = define_cnn_deepFogGuard_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe, edge_failout_lambda)
+    edge_output, skip_edgecloud, filters = define_cnn_DFG_architecture_edge(iot_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, initial_pooling, initial_strides, multiply_hyperconnection_weight_layer_IoTe, edge_failout_lambda)
     return edge_output, skip_edgecloud, filters
 
 def define_cnn_ResiliNet_architecture_fog(skip_iotfog, edge_output, r, transition_dilation_rate, block_fn, filters, dropout, residual_unit, multiply_hyperconnection_weight_layer_IoTf, multiply_hyperconnection_weight_layer_ef):

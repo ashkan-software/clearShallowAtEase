@@ -12,7 +12,7 @@ def create_graph_CNN(skip_hyperconnection_config = None):
     G.add_edge('e','f')
     G.add_edge('f','c')
     
-    if skip_hyperconnection_config: # deepFogGuard and ResiliNet
+    if skip_hyperconnection_config: # DFG and ResiliNet
         if skip_hyperconnection_config[0] == 1:
             G.add_edge('e','c')
         if skip_hyperconnection_config[1] == 1:
@@ -33,7 +33,7 @@ def create_graph_MLP_health(skip_hyperconnection_config = None):
     G.add_edge('f2','f1')
     G.add_edge('f1','c')
 
-    if skip_hyperconnection_config: # deepFogGuard and ResiliNet
+    if skip_hyperconnection_config: # DFG and ResiliNet
         if skip_hyperconnection_config[0] == 1:
             G.add_edge('f2','c')
         if skip_hyperconnection_config[1] == 1:
@@ -69,7 +69,7 @@ def create_graph_MLP_camera(skip_hyperconnection_config = None):
     G.add_edge('f2','f1')
     G.add_edge('f1','c')
     
-    if skip_hyperconnection_config: # deepFogGuard and ResiliNet
+    if skip_hyperconnection_config: # DFG and ResiliNet
         if skip_hyperconnection_config[0] == 1:
             G.add_edge('f2','c')
         if skip_hyperconnection_config[1] == 1:

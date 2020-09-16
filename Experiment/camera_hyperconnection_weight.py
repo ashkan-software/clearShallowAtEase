@@ -1,5 +1,5 @@
 
-from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
+from Experiment.mlp_DFG_camera import define_DFG_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.accuracy import accuracy
 from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
@@ -10,12 +10,12 @@ import os
 import numpy as np
 from keras.callbacks import ModelCheckpoint
 from Experiment.common import make_no_information_flow_map
-from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_camera import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
-    if model_name == "DeepFogGuard Hyperconnection Weight":
-        model = define_deepFogGuard_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)
-        model_file = "models/" + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'camera_hyperconnection_deepFogGuard.h5'
+    if model_name == "DFG Hyperconnection Weight":
+        model = define_DFG_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)
+        model_file = "models/" + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'camera_hyperconnection_DFG.h5'
     else: # model_name is "ResiliNet Hyperconnection Weight"
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)

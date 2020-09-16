@@ -7,26 +7,12 @@ import random
 
 default_skip_hyperconnection_config = [1,1,1]
 
-def define_deepFogGuard_MLP(num_vars,
+def define_DFG_MLP(num_vars,
                             num_classes,
                             hidden_units,
                             reliability_setting = [1.0,1.0,1.0], # reliability of a node between 0 and 1, [f1,f2,e1]
                             skip_hyperconnection_config = default_skip_hyperconnection_config, # binary representating if a skip hyperconnection is alive [f2,e1,g1]
                             hyperconnection_weights_scheme = 1):
-    """Define a deepFogGuard model.
-    ### Naming Convention
-        ex: f2f1 = connection between fog node 2 and fog node 1
-    ### Arguments
-        num_vars (int): specifies number of variables from the data, used to determine input size.
-        num_classes (int): specifies number of classes to be outputted by the model
-        hidden_units (int): specifies number of hidden units per layer in network
-        reliability_setting (list): specifies the reliability of each node in the network
-        skip_hyperconnection_config (list): specifies the alive skip hyperconnections in the network, default value is [1,1,1]
-        hyperconnection_weights (list): specifies the probability, default value is [1,1,1]
-        hyperconnection_weights_scheme (int): determines if the hyperconnections should be based on surivive_rates
-    ### Returns
-        Keras Model object
-    """
 
     hyperconnection_weight_IoTe, hyperconnection_weight_IoTf2,hyperconnection_weight_ef2,hyperconnection_weight_ef1,hyperconnection_weight_f2f1, hyperconnection_weight_f2c, hyperconnection_weight_f1c = set_hyperconnection_weights(
         hyperconnection_weights_scheme, 
@@ -43,19 +29,19 @@ def define_deepFogGuard_MLP(num_vars,
    
     # IoT node
     iot_output = Input(shape = (num_vars,))
-    iot_skip_output = define_MLP_deepFogGuard_architecture_IoT(iot_output, hidden_units)
+    iot_skip_output = define_MLP_DFG_architecture_IoT(iot_output, hidden_units)
 
     # edge node
-    edge_output = define_MLP_deepFogGuard_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
+    edge_output = define_MLP_DFG_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
 
     # fog node 2
-    fog2_output = define_MLP_deepFogGuard_architecture_fog2(iot_skip_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2)
+    fog2_output = define_MLP_DFG_architecture_fog2(iot_skip_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2)
 
     # fog node 1
-    fog1_output = define_MLP_deepFogGuard_architecture_fog1(edge_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1, multiply_hyperconnection_weight_layer_f2f1)
+    fog1_output = define_MLP_DFG_architecture_fog1(edge_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1, multiply_hyperconnection_weight_layer_f2f1)
 
     # cloud node
-    cloud_output = define_MLP_deepFogGuard_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c, multiply_hyperconnection_weight_layer_f2c)
+    cloud_output = define_MLP_DFG_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c, multiply_hyperconnection_weight_layer_f2c)
 
     model = Model(inputs=iot_output, outputs=cloud_output)
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -142,18 +128,18 @@ def define_hyperconnection_weight_lambda_layers(hyperconnection_weight_IoTe, hyp
     return multiply_hyperconnection_weight_layer_IoTe, multiply_hyperconnection_weight_layer_IoTf2, multiply_hyperconnection_weight_layer_ef2, multiply_hyperconnection_weight_layer_ef1, multiply_hyperconnection_weight_layer_f2f1, multiply_hyperconnection_weight_layer_f2c, multiply_hyperconnection_weight_layer_f1c
 
 
-def define_MLP_deepFogGuard_architecture_IoT(img_input, hidden_units):
+def define_MLP_DFG_architecture_IoT(img_input, hidden_units):
     # use a linear Dense layer to transform input into the shape needed for the network
     iot_output = Dense(units=hidden_units,name="skip_iotfog2",activation='linear')(img_input)
     return iot_output
 
-def define_MLP_deepFogGuard_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe = None):
+def define_MLP_DFG_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe = None):
     if multiply_hyperconnection_weight_layer_IoTe != None:
         iot_output = multiply_hyperconnection_weight_layer_IoTe(iot_output)
     edge_output = define_MLP_architecture_edge(iot_output, hidden_units)
     return edge_output
 
-def define_MLP_deepFogGuard_architecture_fog2(iot_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2 = None, multiply_hyperconnection_weight_layer_ef2 = None):
+def define_MLP_DFG_architecture_fog2(iot_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2 = None, multiply_hyperconnection_weight_layer_ef2 = None):
     if multiply_hyperconnection_weight_layer_IoTf2 == None or multiply_hyperconnection_weight_layer_ef2 == None:
         fog2_input = layers.add([edge_output,iot_output], name = "node3_input")
     else:
@@ -161,7 +147,7 @@ def define_MLP_deepFogGuard_architecture_fog2(iot_output, edge_output, hidden_un
     fog2_output = define_MLP_architecture_fog2(fog2_input, hidden_units)
     return fog2_output
 
-def define_MLP_deepFogGuard_architecture_fog1(edge_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1 = None, multiply_hyperconnection_weight_layer_f2f1 = None):
+def define_MLP_DFG_architecture_fog1(edge_output, fog2_output, hidden_units, multiply_hyperconnection_weight_layer_ef1 = None, multiply_hyperconnection_weight_layer_f2f1 = None):
     if multiply_hyperconnection_weight_layer_ef1 == None or multiply_hyperconnection_weight_layer_f2f1 == None:
         fog1_input = layers.add([edge_output,fog2_output], name = "node2_input")
     else:
@@ -169,7 +155,7 @@ def define_MLP_deepFogGuard_architecture_fog1(edge_output, fog2_output, hidden_u
     fog1_output = define_MLP_architecture_fog1(fog1_input, hidden_units)  
     return fog1_output
 
-def define_MLP_deepFogGuard_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c = None, multiply_hyperconnection_weight_layer_f2c = None):
+def define_MLP_DFG_architecture_cloud(fog2_output, fog1_output, hidden_units, num_classes, multiply_hyperconnection_weight_layer_f1c = None, multiply_hyperconnection_weight_layer_f2c = None):
     if multiply_hyperconnection_weight_layer_f1c == None or multiply_hyperconnection_weight_layer_f2c == None:
         cloud_input = layers.add([fog1_output,fog2_output], name = "node1_input")
     else:

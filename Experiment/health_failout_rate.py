@@ -8,7 +8,7 @@ import os
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 from Experiment.common import make_no_information_flow_map
-from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_health import default_skip_hyperconnection_config
 
 def define_and_train(iteration, model_name, load_for_inference, failout_survival_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, num_vars, num_classes, hidden_units, verbose):
     mux_adds_str = "mux_adds" if MUX_ADDS else "" 

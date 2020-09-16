@@ -2,11 +2,11 @@ from keras.models import Sequential
 from keras.layers import Dense,Input,Lambda, Activation
 import keras.backend as K
 import keras.layers as layers
-from Experiment.mlp_deepFogGuard_health import define_MLP_deepFogGuard_architecture_edge, define_MLP_deepFogGuard_architecture_IoT
-from Experiment.mlp_deepFogGuard_health import define_hyperconnection_weight_lambda_layers, set_hyperconnection_weights
+from Experiment.mlp_DFG_health import define_MLP_DFG_architecture_edge, define_MLP_DFG_architecture_IoT
+from Experiment.mlp_DFG_health import define_hyperconnection_weight_lambda_layers, set_hyperconnection_weights
 from Experiment.mlp_Vanilla_health import define_MLP_architecture_cloud, define_MLP_architecture_fog1, define_MLP_architecture_fog2
 from Experiment.custom_ops import Failout, InputMux
-from Experiment.mlp_deepFogGuard_health import default_skip_hyperconnection_config
+from Experiment.mlp_DFG_health import default_skip_hyperconnection_config
 from keras.models import Model
 from keras.backend import constant
 import random 
@@ -20,18 +20,6 @@ def define_ResiliNet_MLP(num_vars,
                             reliability_setting = [1.0,1.0,1.0], 
                             skip_hyperconnection_config = default_skip_hyperconnection_config, 
                             hyperconnection_weights_scheme = 1):
-    """Define a ResiliNet model.
-    ### Naming Convention
-        ex: f2f1 = connection between fog node 2 and fog node 1
-    ### Arguments
-        num_vars (int): specifies number of variables from the data, used to determine input size.
-        num_classes (int): specifies number of classes to be outputted by the model
-        hidden_units (int): specifies number of hidden units per layer in network
-        failout_survival_setting (list): specifies the failout survival rate of each node in the network
-        skip_hyperconnections (list): specifies the alive skip hyperconnections in the network, default value is [1,1,1]
-    ### Returns
-        Keras Model object
-    """
 
     hyperconnection_weight_IoTe, hyperconnection_weight_IoTf2,hyperconnection_weight_ef2,hyperconnection_weight_ef1,hyperconnection_weight_f2f1, hyperconnection_weight_f2c, hyperconnection_weight_f1c = set_hyperconnection_weights(
         hyperconnection_weights_scheme, 
@@ -83,10 +71,10 @@ def MLP_failout_definitions(failout_survival_setting):
     return edge_failout_lambda, fog2_failout_lambda, fog1_failout_lambda
 
 def define_MLP_ResiliNet_architecture_IoT(img_input, hidden_units):
-    return define_MLP_deepFogGuard_architecture_IoT(img_input, hidden_units)
+    return define_MLP_DFG_architecture_IoT(img_input, hidden_units)
 
 def define_MLP_ResiliNet_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe = None):
-    return define_MLP_deepFogGuard_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
+    return define_MLP_DFG_architecture_edge(iot_output, hidden_units, multiply_hyperconnection_weight_layer_IoTe)
 
 def define_MLP_ResiliNet_architecture_fog2(iot_skip_output, edge_output, hidden_units, multiply_hyperconnection_weight_layer_IoTf2 = None, multiply_hyperconnection_weight_layer_ef2 = None):
     if multiply_hyperconnection_weight_layer_IoTf2 == None or multiply_hyperconnection_weight_layer_ef2 == None:

@@ -5,30 +5,16 @@ from keras.models import Model
 PARTITION_SETING = 1 # ARCHITECTURE ONE: 1->2->3->4. ARCHITECTURE TWO: 2->3->2->3. 
 
 def define_vanilla_model_MLP(num_vars,num_classes,hidden_units):
-    """Define a normal neural network.
-   ### Naming Convention
-        ex: f2f1 = connection between fog node 2 and fog node 1
-    ### Arguments
-        num_vars (int): specifies number of variables from the data, used to determine input size.
-        num_classes (int): specifies number of classes to be outputted by the model
-        hidden_units (int): specifies number of hidden units per layer in network
-      
-    ### Returns
-        Keras Model object
-    """
-
     # IoT Node (input image)
     img_input = Input(shape = (num_vars,))
 
     # edge node
     edge = define_MLP_architecture_edge(img_input, hidden_units)
     
-
     # fog node 2
     fog2 = Lambda(lambda x: x * 1,name="node3_input")(edge)
     fog2 = define_MLP_architecture_fog2(fog2, hidden_units)
     
-
     # fog node 1
     fog1 = Lambda(lambda x: x * 1,name="node2_input")(fog2)
     fog1 = define_MLP_architecture_fog1(fog1, hidden_units)

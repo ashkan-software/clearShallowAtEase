@@ -6,7 +6,7 @@ from keras.callbacks import ModelCheckpoint
 import keras.backend as K
 import math
 import os 
-from Experiment.cnn_deepFogGuard_MobileNet import define_deepFogGuard_CNN_MobileNet
+from Experiment.cnn_DFG_MobileNet import define_DFG_CNN_MobileNet
 from Experiment.cnn_ResiliNet_MobileNet import define_ResiliNet_CNN_MobileNet, MUX_ADDS
 from Experiment.accuracy import accuracy
 from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, alpha, input_shape, strides, num_gpus
@@ -14,7 +14,7 @@ from Experiment.common import average, make_results_folder, convert_to_string, w
 import numpy as np
 import gc
 from Experiment.common import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
+from Experiment.cnn_DFG_MobileNet import default_skip_hyperconnection_config
 
 def make_output_dictionary(model_name, reliability_settings, num_iterations, skip_hyperconnection_configurations):
     no_failure, normal, poor, hazardous = convert_to_string(reliability_settings)
@@ -61,9 +61,9 @@ def make_output_dictionary(model_name, reliability_settings, num_iterations, ski
     return output
 
 def define_and_train(iteration, model_name, load_for_inference, reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, batch_size, classes, input_shape, alpha, strides, train_datagen, epochs, progress_verbose, checkpoint_verbose, train_steps_per_epoch, val_steps_per_epoch, num_gpus):
-    if model_name == "DeepFogGuard Hyperconnection Weight Sensitivity":
-        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'cifar_skiphyperconnection_sensitivity_deepFogGuard.h5'
-        model, parallel_model = define_deepFogGuard_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, reliability_setting=reliability_setting, skip_hyperconnection_config = skip_hyperconnection_configuration, strides = strides, num_gpus=num_gpus)
+    if model_name == "DFG Hyperconnection Weight Sensitivity":
+        model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'cifar_skiphyperconnection_sensitivity_DFG.h5'
+        model, parallel_model = define_DFG_CNN_MobileNet(classes=classes,input_shape = input_shape,alpha = alpha, reliability_setting=reliability_setting, skip_hyperconnection_config = skip_hyperconnection_configuration, strides = strides, num_gpus=num_gpus)
     else: # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model_file = 'models/' + str(iteration) + " " +mux_adds_str+ str(skip_hyperconnection_configuration) + " " + 'cifar_skiphyperconnection_sensitivity_ResiliNet.h5'

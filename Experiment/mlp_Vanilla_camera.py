@@ -6,17 +6,6 @@ import keras.layers as layers
 def define_vanilla_model_MLP(input_shape,
                              num_classes,
                              hidden_units = 32):
-    """Define a normal neural network.
-   ### Naming Convention
-        ex: f2f1 = connection between fog node 2 and fog node 1
-    ### Arguments
-        num_vars (int): specifies number of variables from the data, used to determine input size.
-        num_classes (int): specifies number of classes to be outputted by the model
-        hidden_units (int): specifies number of hidden units per layer in network
-      
-    ### Returns
-        Keras Model object
-    """
 
     # IoT Node (input image)
     img_input_1 = Input(shape = input_shape)    

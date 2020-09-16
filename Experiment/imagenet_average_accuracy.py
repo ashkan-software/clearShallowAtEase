@@ -9,7 +9,7 @@ import gc
 import os
 import numpy as np
 from Experiment.common import make_no_information_flow_map
-from Experiment.cnn_deepFogGuard_MobileNet import default_skip_hyperconnection_config
+from Experiment.cnn_DFG_MobileNet import default_skip_hyperconnection_config
 
 import tensorflow as tf
 def define_and_train(iteration, model_name, load_for_inference, continue_training, train_generator, val_generator, input_shape, classes, alpha,num_train_examples, epochs,num_gpus, strides, num_workers):
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     train_generator, test_generator = init_data(num_gpus) 
     
     ResiliNet_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
-    deepFogGuard_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
+    DFG_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
     Vanilla_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet")
     
     load_for_inference = False
@@ -63,9 +63,9 @@ if __name__ == "__main__":
             strides = strides,
             num_workers = num_workers
             )
-        # deepFogGuard = define_and_train(
+        # DFG = define_and_train(
         #     iteration = iteration, 
-        #     model_name = "deepFogGuard", 
+        #     model_name = "DFG", 
         #     load_for_inference = load_for_inference, 
         #     continue_training = continue_training,
         #     train_generator = train_generator, 
@@ -98,38 +98,38 @@ if __name__ == "__main__":
         # test models
         for reliability_setting in reliability_settings:
             calc_accuracy(iteration, "ResiliNet", ResiliNet, ResiliNet_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
-            # calc_accuracy(iteration, "deepFogGuard", deepFogGuard, deepFogGuard_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
+            # calc_accuracy(iteration, "DFG", DFG, DFG_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
             # calc_accuracy(iteration, "Vanilla", Vanilla, Vanilla_no_information_flow_map, reliability_setting, output_list,test_generator, num_test_examples)
             
         # clear session so that model will recycled back into memory
         K.clear_session()
         gc.collect()
-        # del deepFogGuard
+        # del DFG
         del ResiliNet
         # del Vanilla
    # calculate average accuracies from all expected accuracies
     for reliability_setting in reliability_settings:
         ResiliNet_acc = average(output["ResiliNet"][str(reliability_setting)])
-        # deepFogGuard_acc = average(output["deepFogGuard"][str(reliability_setting)])
+        # DFG_acc = average(output["DFG"][str(reliability_setting)])
         # Vanilla_acc = average(output["Vanilla"][str(reliability_setting)])
 
         ResiliNet_std = np.std(output["ResiliNet"][str(reliability_setting)],ddof=1)
-        # deepFogGuard_std = np.std(output["deepFogGuard"][str(reliability_setting)],ddof = 1)
+        # DFG_std = np.std(output["DFG"][str(reliability_setting)],ddof = 1)
         # Vanilla_std = np.std(output["Vanilla"][str(reliability_setting)],ddof = 1)
 
         output_list.append(str(reliability_setting) + " ResiliNet accuracy: " + str(ResiliNet_acc) + '\n')
-        # output_list.append(str(reliability_setting) + " deepFogGuard accuracy: " + str(deepFogGuard_acc) + '\n')
+        # output_list.append(str(reliability_setting) + " DFG accuracy: " + str(DFG_acc) + '\n')
         # output_list.append(str(reliability_setting) + " Vanilla accuracy: " + str(Vanilla_acc) + '\n')
 
         output_list.append(str(reliability_setting) + " ResiliNet std: " + str(ResiliNet_std) + '\n')
-        # output_list.append(str(reliability_setting) + " deepFogGuard std: " + str(deepFogGuard_std) + '\n')
+        # output_list.append(str(reliability_setting) + " DFG std: " + str(DFG_std) + '\n')
         # output_list.append(str(reliability_setting) + " Vanilla std: " + str(Vanilla_std) + '\n')
 
         print(str(reliability_setting),"ResiliNet accuracy:",ResiliNet_acc)
-        # print(str(reliability_setting),"deepFogGuard accuracy:",deepFogGuard_acc)
+        # print(str(reliability_setting),"DFG accuracy:",DFG_acc)
         # print(str(reliability_setting),"Vanilla accuracy:",Vanilla_acc)
 
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
-        # print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)
+        # print(str(reliability_setting),"DFG std:",DFG_std)
         # print(str(reliability_setting),"Vanilla std:",Vanilla_std)
     write_n_upload(output_name, output_list)
