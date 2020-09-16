@@ -3,7 +3,7 @@ from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_Vanilla_camera import define_vanilla_model_MLP
 from Experiment.accuracy import accuracy
-from Experiment.common_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
+from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
 from Experiment.common import write_n_upload, average
 from Experiment.common import convert_to_string, make_output_dictionary_average_accuracy
 import keras.backend as K
@@ -44,9 +44,7 @@ if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
     
-    use_GCP = False
-    train_data,val_data, test_data, train_labels,val_labels,test_labels = init_data(use_GCP) 
-    reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations = init_common_experiment_params()
+    train_data,val_data, test_data, train_labels,val_labels,test_labels = init_data() 
     
     ResiliNet_no_information_flow_map = make_no_information_flow_map("Camera", default_skip_hyperconnection_config)
     deepFogGuard_no_information_flow_map = make_no_information_flow_map("Camera", default_skip_hyperconnection_config)
@@ -112,5 +110,5 @@ if __name__ == "__main__":
         print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)
         print(str(reliability_setting),"Vanilla std:",Vanilla_std)
 
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

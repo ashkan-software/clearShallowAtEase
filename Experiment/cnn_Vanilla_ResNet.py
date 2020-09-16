@@ -20,6 +20,7 @@ def define_vanilla_CNN_ResNet(input_shape=None, classes=10, block='basic', resid
                             initial_strides=(2, 2), initial_kernel_size=(7, 7), initial_pooling='max',
                             final_pooling=None, top='classification', num_gpus = 1):
     """Builds a custom ResNet18 architecture.
+    
     Args:
         input_shape: optional shape tuple, only to be specified
             if `include_top` is False (otherwise the input shape

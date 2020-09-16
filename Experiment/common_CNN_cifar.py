@@ -44,7 +44,6 @@ batch_size = 128
 epochs = 75
 progress_verbose = 1
 checkpoint_verbose = 1
-use_GCP = False
 alpha = .75
 input_shape = (32,32,3)
 classes = 10

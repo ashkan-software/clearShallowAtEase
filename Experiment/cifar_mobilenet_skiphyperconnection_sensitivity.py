@@ -9,7 +9,7 @@ import os
 from Experiment.cnn_deepFogGuard_MobileNet import define_deepFogGuard_CNN_MobileNet
 from Experiment.cnn_ResiliNet_MobileNet import define_ResiliNet_CNN_MobileNet, MUX_ADDS
 from Experiment.accuracy import accuracy
-from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus
+from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, alpha, input_shape, strides, num_gpus
 from Experiment.common import average, make_results_folder, convert_to_string, write_n_upload, make_results_folder
 import numpy as np
 import gc
@@ -122,5 +122,5 @@ if __name__ == "__main__":
             output_list.append(str(reliability_setting) + str(skip_hyperconnection_configuration) + str(std) + '\n')
             print(str(reliability_setting),acc)
             print(str(reliability_setting), std)
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

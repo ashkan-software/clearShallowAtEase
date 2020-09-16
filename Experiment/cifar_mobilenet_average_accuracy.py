@@ -5,7 +5,7 @@ import math
 import os 
 from Experiment.common_CNN import define_model
 from Experiment.accuracy import accuracy
-from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus
+from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, alpha, input_shape, strides, num_gpus
 from Experiment.common import average, make_output_dictionary_average_accuracy, write_n_upload, make_results_folder
 import gc
 import numpy as np
@@ -81,5 +81,5 @@ if __name__ == "__main__":
         print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
     
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

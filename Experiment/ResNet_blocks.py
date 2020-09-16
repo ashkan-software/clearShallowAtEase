@@ -8,7 +8,8 @@ Reference material for extended functionality:
 - [Deep Residual Learning for Instrument Segmentation in
    Robotic Surgery](https://arxiv.org/abs/1703.08580)
   for segmentation support.
-Implementation Adapted from: https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/applications/resnet.py
+Implementation Adapted from: 
+https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/applications/resnet.py
 """ 
 from __future__ import division
 

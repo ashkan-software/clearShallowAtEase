@@ -7,7 +7,7 @@ import math
 import os 
 from Experiment.cnn_ResiliNet_ResNet import define_ResiliNet_CNN_ResNet, MUX_ADDS
 from Experiment.accuracy import accuracy
-from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, use_GCP, alpha, input_shape, strides, num_gpus
+from Experiment.common_CNN_cifar import init_data, get_model_weights_CNN_cifar, num_iterations, classes, reliability_settings, train_datagen, batch_size, epochs, progress_verbose, checkpoint_verbose, alpha, input_shape, strides, num_gpus
 from Experiment.common import average, make_results_folder, make_output_dictionary_failout_rate, write_n_upload
 import numpy as np
 import gc
@@ -37,7 +37,6 @@ if __name__ == "__main__":
     output_list = []
 
     load_for_inference = False
-    use_GCP = False
     train_steps_per_epoch = math.ceil(len(training_data) / batch_size)
     val_steps_per_epoch = math.ceil(len(val_data) / batch_size)
     no_information_flow_map = make_no_information_flow_map("ResNet", default_skip_hyperconnection_config)
@@ -100,5 +99,5 @@ if __name__ == "__main__":
             ResiliNet_failout_rate_std = np.std(output[str(failout_survival_setting)][str(reliability_setting)],ddof=1)
             output_list.append(str(reliability_setting) + " Fixed Failout std: " + str(ResiliNet_failout_rate_std) + '\n')
             print(str(reliability_setting), "Fixed Failout std:",ResiliNet_failout_rate_std)
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

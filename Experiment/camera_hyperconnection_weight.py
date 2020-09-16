@@ -2,7 +2,7 @@
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
 from Experiment.accuracy import accuracy
-from Experiment.common_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
+from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
 from Experiment.common import average, convert_to_string, write_n_upload, make_results_folder, make_output_dictionary_hyperconnection_weight
 import keras.backend as K
 import gc
@@ -12,7 +12,7 @@ from keras.callbacks import ModelCheckpoint
 from Experiment.common import make_no_information_flow_map
 from Experiment.mlp_deepFogGuard_camera import default_skip_hyperconnection_config
 
-def define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
+def define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
     if model_name == "DeepFogGuard Hyperconnection Weight":
         model = define_deepFogGuard_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)
         model_file = "models/" + str(iteration) + "_" + str(reliability_setting) + "_" + str(weight_scheme) + 'camera_hyperconnection_deepFogGuard.h5'
@@ -20,17 +20,15 @@ def define_and_train(iteration, model_name, load_for_inference, weight_scheme, r
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting, hyperconnection_weights_scheme = weight_scheme)
         model_file = "models/" + str(iteration) + "_" +mux_adds_str+ str(reliability_setting) + "_" + str(weight_scheme) + 'camera_hyperconnection_ResiliNet.h5'
-    get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, verbose)
+    get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, epochs, batch_size, verbose)
     return model
 
 # runs all 3 failure configurations for all 3 models
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    use_GCP = False
-    training_data,val_data, test_data, training_labels,val_labels,test_labels = init_data(use_GCP)
+    training_data,val_data, test_data, training_labels,val_labels,test_labels = init_data()
 
-    reliability_settings, input_shape, num_classes, hidden_units, batch_size, num_train_epochs, num_iterations = init_common_experiment_params()
     no_information_flow_map = make_no_information_flow_map("Camera", default_skip_hyperconnection_config)
    
     load_for_inference = False
@@ -54,14 +52,14 @@ if __name__ == "__main__":
         for weight_scheme in considered_weight_schemes:
             if weight_scheme == 2 or weight_scheme == 3: # if the weight scheme depends on reliability
                 for reliability_setting in reliability_settings:
-                    hyperconnection_weight = define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
+                    hyperconnection_weight = define_and_train(iteration, model_name, load_for_inference, weight_scheme, reliability_setting, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
                     output[model_name][weight_scheme][str(reliability_setting)][iteration-1] = calc_expected_accuracy(hyperconnection_weight, no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
                     # clear session so that model will recycled back into memory
                     K.clear_session()
                     gc.collect()
                     del hyperconnection_weight
             else:
-                hyperconnection_weight = define_and_train(iteration, model_name, load_for_inference, weight_scheme, default_reliability_setting, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
+                hyperconnection_weight = define_and_train(iteration, model_name, load_for_inference, weight_scheme, default_reliability_setting, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
                 for reliability_setting in reliability_settings:
                     output[model_name][weight_scheme][str(reliability_setting)][iteration-1] = calc_expected_accuracy(hyperconnection_weight, no_information_flow_map,reliability_setting,output_list,training_labels= training_labels, test_data= test_data, test_labels= test_labels)
                 # clear session so that model will recycled back into memory
@@ -79,5 +77,5 @@ if __name__ == "__main__":
             hyperconnection_weight_std = np.std(output[model_name][weight_scheme][str(reliability_setting)],ddof=1)
             output_list.append(str(reliability_setting) + str(weight_scheme) + " "+ model_name +" std: " + str(hyperconnection_weight_std) + '\n')
             print(str(reliability_setting),weight_scheme,model_name,"std:",hyperconnection_weight_std)
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

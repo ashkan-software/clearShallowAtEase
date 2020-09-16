@@ -1,7 +1,7 @@
 
 from Experiment.common_CNN import define_model
 from Experiment.accuracy import accuracy
-from Experiment.common_CNN_imagenet import init_data, init_common_experiment_params, get_model_weights_CNN_imagenet
+from Experiment.common_CNN_imagenet import init_data, get_model_weights_CNN_imagenet, num_iterations,num_train_examples,num_test_examples, reliability_settings, input_shape, num_classes, alpha, epochs, num_gpus, strides, num_workers
 from Experiment.common import average, convert_to_string, make_output_dictionary_average_accuracy, make_results_folder,write_n_upload
 import keras.backend as K
 import datetime
@@ -27,9 +27,8 @@ def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliabi
 if __name__ == "__main__":
     accuracy = accuracy("Imagenet")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    use_GCP = False
-    num_iterations,num_train_examples,num_test_examples, reliability_settings, input_shape, num_classes, alpha, epochs, num_gpus, strides, num_workers = init_common_experiment_params()
-    train_generator, test_generator = init_data(use_GCP, num_gpus) 
+    
+    train_generator, test_generator = init_data(num_gpus) 
     
     ResiliNet_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
     deepFogGuard_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet", default_skip_hyperconnection_config)
@@ -133,4 +132,4 @@ if __name__ == "__main__":
         print(str(reliability_setting),"ResiliNet std:",ResiliNet_std)
         # print(str(reliability_setting),"deepFogGuard std:",deepFogGuard_std)
         # print(str(reliability_setting),"Vanilla std:",Vanilla_std)
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)

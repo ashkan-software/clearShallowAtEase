@@ -106,8 +106,3 @@ def read_dataset(dataset_path, image_size, labels = ['person_images', 'car_image
     images, img_labels, img_names, classes = shuffle(images, img_labels, img_names, classes)
 
     return images, img_labels, img_names, classes
-
-# used for just testing
-if __name__ == "__main__":
-    images, img_labels, img_names, classes = read_dataset("/Users/ashkany/Documents/GitHub/ResiliNet/multiview-dataset/test_dir", 32)
-    print(images.shape)

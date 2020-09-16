@@ -5,21 +5,27 @@ from keras.preprocessing.image import load_img
 from keras.utils import multi_gpu_model
 from keras.callbacks import ModelCheckpoint
 
-def init_data(use_GCP, num_gpus, pc = 4):
-    if pc == 1: # google cloud
-        train_dir = "/home/yousefpour_ashkan/new_disk/train"
-        test_dir = "/home/yousefpour_ashkan/val"
-    elif pc == 2: # our AWS
-        train_dir = "/home/yousefpour_ashkan/new_disk/train"
-        test_dir = "/home/yousefpour_ashkan/val"
-    elif pc == 3: # local
-        train_dir = "/home/user1/externalDrive/ashkan-imagenet/train"
-        test_dir = "/home/user1/externalDrive/ashkan-imagenet/val"
-        num_gpus = 1
-    elif pc == 4: # Guanhua AWS
-        train_dir = "/home/ubuntu/imagenet/train"
-        test_dir = "/home/ubuntu/imagenet/val"
-        num_gpus = 1
+num_train_examples = 1300000
+num_test_examples = 50000
+input_shape = (160,160,3)
+alpha = .75
+num_iterations = 1
+# need to change this to be accurate
+reliability_settings = [
+    [1,1],
+    [.98,.96],
+    [.95,.90],
+    [.85,.80],
+]
+num_classes = 1000
+epochs = 10
+num_gpus = 4
+num_workers = 32
+strides = (2,2)
+
+def init_data(num_gpus):
+    train_dir = "/path/to/train/dataset"
+    test_dir = "/path/to/test/dataset"
     input_shape = (160,160)
     batch_size = 1024
     train_datagen = ImageDataGenerator(
@@ -50,26 +56,6 @@ def init_data(use_GCP, num_gpus, pc = 4):
         seed=42
     )
     return train_generator, test_generator
-
-def init_common_experiment_params():
-    num_train_examples = 1300000
-    num_test_examples = 50000
-    input_shape = (160,160,3)
-    alpha = .75
-    num_iterations = 1
-    # need to change this to be accurate
-    reliability_settings = [
-        [1,1],
-        [.98,.96],
-        [.95,.90],
-        [.85,.80],
-    ]
-    num_classes = 1000
-    epochs = 10
-    num_gpus = 4
-    num_workers = 32
-    strides = (2,2)
-    return num_iterations, num_train_examples,num_test_examples, reliability_settings, input_shape, num_classes, alpha, epochs, num_gpus, strides, num_workers
 
 def get_model_weights_CNN_imagenet(model, parallel_model, model_name, load_for_inference, continue_training, model_file, train_generator, val_generator, num_train_examples, epochs, num_gpus, num_workers):
     if load_for_inference:

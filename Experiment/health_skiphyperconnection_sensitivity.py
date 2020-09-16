@@ -1,7 +1,7 @@
 
 from Experiment.mlp_deepFogGuard_health import define_deepFogGuard_MLP
 from Experiment.mlp_ResiliNet_health import define_ResiliNet_MLP, MUX_ADDS
-from Experiment.common_MLP_health import init_data, init_common_experiment_params, get_model_weights_MLP_health
+from Experiment.common_MLP_health import init_data, get_model_weights_MLP_health, num_iterations, num_classes, reliability_settings, num_train_epochs, hidden_units, batch_size
 from Experiment.accuracy import accuracy
 from Experiment.common import average, convert_to_string, write_n_upload, make_results_folder
 import keras.backend as K
@@ -91,10 +91,8 @@ def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliabi
 if __name__ == "__main__":
     accuracy = accuracy("Health")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    use_GCP = False
-    training_data, val_data, test_data, training_labels, val_labels, test_labels = init_data(use_GCP)
+    training_data, val_data, test_data, training_labels, val_labels, test_labels, num_vars = init_data()
 
-    num_iterations, num_vars, num_classes, reliability_settings, num_train_epochs, hidden_units, batch_size = init_common_experiment_params(training_data)
     skip_hyperconnection_configurations = [
         # [f2,e1,g1]
         [0,0,0],
@@ -148,5 +146,5 @@ if __name__ == "__main__":
             output_list.append(str(reliability_setting) + " " + str(skip_hyperconnection_configuration) + " std: " + str(std) + '\n')
             print(str(reliability_setting),str(skip_hyperconnection_configuration),"std:",std)
     
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)

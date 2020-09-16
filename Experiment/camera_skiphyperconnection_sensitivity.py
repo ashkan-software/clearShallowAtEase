@@ -1,7 +1,7 @@
 
 from Experiment.mlp_deepFogGuard_camera import define_deepFogGuard_MLP
 from Experiment.mlp_ResiliNet_camera import define_ResiliNet_MLP, MUX_ADDS
-from Experiment.common_MLP_camera import init_data, init_common_experiment_params, get_model_weights_MLP_camera
+from Experiment.common_MLP_camera import init_data, get_model_weights_MLP_camera, reliability_settings, input_shape, num_classes, hidden_units, batch_size, epochs, num_iterations
 from Experiment.accuracy import accuracy
 from Experiment.common import average, convert_to_string, write_n_upload, make_results_folder
 import keras.backend as K
@@ -72,7 +72,7 @@ def make_output_dictionary(model_name, reliability_settings, num_iterations, ski
     }
     return output
 
-def define_and_train(iteration, model_name, load_for_inference, reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
+def define_and_train(iteration, model_name, load_for_inference, reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose):
     if model_name == "DeepFogGuard Hyperconnection Weight Sensitivity":
         model = define_deepFogGuard_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
         model_file = 'models/' + str(iteration) + " " + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_deepFogGuard.h5'
@@ -80,7 +80,7 @@ def define_and_train(iteration, model_name, load_for_inference, reliability_sett
         mux_adds_str = "mux_adds" if MUX_ADDS else "" 
         model = define_ResiliNet_MLP(input_shape,num_classes,hidden_units, reliability_setting=reliability_setting,skip_hyperconnection_config=skip_hyperconnection_configuration)
         model_file = 'models/' + str(iteration) + " "+mux_adds_str + str(skip_hyperconnection_configuration) + " " + 'camera_skiphyperconnection_sensitivity_ResiliNet.h5'
-    get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, verbose)
+    get_model_weights_MLP_camera(model, model_name, load_for_inference, model_file, training_data, training_labels, val_data, val_labels, epochs, batch_size, verbose)
     return model
 
 def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliability_setting, skip_hyperconnection_configuration, output_list,training_labels,test_data,test_labels):
@@ -92,10 +92,8 @@ def calc_accuracy(iteration, model_name, model, no_information_flow_map, reliabi
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    use_GCP = False
-    training_data,val_data, test_data, training_labels,val_labels,test_labels = init_data(use_GCP)
+    training_data,val_data, test_data, training_labels,val_labels,test_labels = init_data()
 
-    reliability_settings, input_shape, num_classes, hidden_units, batch_size, num_train_epochs, num_iterations = init_common_experiment_params()
     skip_hyperconnection_configurations = [
         # [f2,f3,f4,e1,e2,e3,e4]
         [1,1,1,1,0,0,0],
@@ -128,7 +126,7 @@ if __name__ == "__main__":
         print("ITERATION ", iteration)
         for skip_hyperconnection_configuration in skip_hyperconnection_configurations:
             
-            weight_sesitivity = define_and_train(iteration, model_name, load_for_inference, default_reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, num_train_epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
+            weight_sesitivity = define_and_train(iteration, model_name, load_for_inference, default_reliability_setting, skip_hyperconnection_configuration, training_data, training_labels, val_data, val_labels, epochs, batch_size, input_shape, num_classes, hidden_units, verbose)
             # test models
             for reliability_setting in reliability_settings:
                 print(reliability_setting)
@@ -150,5 +148,5 @@ if __name__ == "__main__":
             output_list.append(str(reliability_setting) + " " + str(skip_hyperconnection_configuration) + " std: " + str(std) + '\n')
             print(str(reliability_setting),str(skip_hyperconnection_configuration),"std:",std)
     
-    write_n_upload(output_name, output_list, use_GCP)
+    write_n_upload(output_name, output_list)
     print(output)
