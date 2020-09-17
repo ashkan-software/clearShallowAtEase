@@ -36,10 +36,7 @@ def define_and_train(
     load_for_inference,
     weight_scheme,
     reliability_setting,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     num_train_epochs,
     batch_size,
     num_vars,
@@ -88,10 +85,7 @@ def define_and_train(
         model_name,
         load_for_inference,
         model_file,
-        training_data,
-        training_labels,
-        val_data,
-        val_labels,
+        data,
         num_train_epochs,
         batch_size,
         verbose,
@@ -103,15 +97,7 @@ def define_and_train(
 if __name__ == "__main__":
     accuracy = accuracy("Health")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    (
-        training_data,
-        val_data,
-        test_data,
-        training_labels,
-        val_labels,
-        test_labels,
-        num_vars,
-    ) = init_data()
+    data, num_vars = init_data()
 
     no_information_flow_map = make_no_information_flow_map(
         "Health", default_skip_hyperconnection_config
@@ -147,10 +133,7 @@ if __name__ == "__main__":
                         load_for_inference,
                         weight_scheme,
                         reliability_setting,
-                        training_data,
-                        training_labels,
-                        val_data,
-                        val_labels,
+                        data,
                         num_train_epochs,
                         batch_size,
                         num_vars,
@@ -165,9 +148,7 @@ if __name__ == "__main__":
                         no_information_flow_map,
                         reliability_setting,
                         output_list,
-                        training_labels=training_labels,
-                        test_data=test_data,
-                        test_labels=test_labels,
+                        data=data,
                     )
                     # clear session so that model will recycled back into memory
                     K.clear_session()
@@ -180,10 +161,7 @@ if __name__ == "__main__":
                     load_for_inference,
                     weight_scheme,
                     default_reliability_setting,
-                    training_data,
-                    training_labels,
-                    val_data,
-                    val_labels,
+                    data,
                     num_train_epochs,
                     batch_size,
                     num_vars,
@@ -199,9 +177,7 @@ if __name__ == "__main__":
                         no_information_flow_map,
                         reliability_setting,
                         output_list,
-                        training_labels=training_labels,
-                        test_data=test_data,
-                        test_labels=test_labels,
+                        data=data,
                     )
                 # clear session so that model will recycled back into memory
                 K.clear_session()

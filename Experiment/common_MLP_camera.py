@@ -100,7 +100,7 @@ def get_model_weights_MLP_camera(
             x=data.train,
             y=data.train_labels,
             batch_size=batch_size,
-            validation_data=(data.val, data,val_labels),
+            validation_data=(data.val, data.val_labels),
             callbacks=[modelCheckPoint],
             verbose=verbose,
             epochs=num_train_epochs,
