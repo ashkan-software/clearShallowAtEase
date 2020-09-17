@@ -21,7 +21,7 @@ If you are using Python 3.x, replace `python` with `python3`. In general, you ca
  python Experiment/<dataset>_<experiment-type>.py 
 ```
   
- where `<dataset>` is either `health`, `cifar`, or `imagenet` (Note that, `camera` is only for *experimental* purposes with a distribtued neural network that is both vertically and horizontally split.), and `<experiment-type>` is either `average_accuracy`, `hyperconnection_weight`, `failout_rate`, or `skiphyperconnection_sensitivity`. 
+ where `<dataset>` is either `health`, `cifar_mobilenet`,  `cifar_resnet`, or `imagenet` (Note that, `camera` is only for *experimental* purposes with a distribtued neural network that is both vertically and horizontally split.), and `<experiment-type>` is either `average_accuracy`, `hyperconnection_weight`, `failout_rate`, or `skiphyperconnection_sensitivity`. 
 
 The datasets and the preprocessing methods are explained in the paper. The experiments are as follows:
 
