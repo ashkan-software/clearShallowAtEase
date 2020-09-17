@@ -80,10 +80,7 @@ def get_model_weights_CNN_cifar(
     model_name,
     load_for_inference,
     model_file,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     train_datagen,
     batch_size,
     epochs,
@@ -101,10 +98,10 @@ def get_model_weights_CNN_cifar(
             modelCheckPoint = CustomModelCheckpoint(model, model_file)
             parallel_model.fit_generator(
                 train_datagen.flow(
-                    training_data, training_labels, batch_size=batch_size
+                    data.train, data.train_labels, batch_size=batch_size
                 ),
                 epochs=epochs,
-                validation_data=(val_data, val_labels),
+                validation_data=(data.val, data.val_labels),
                 steps_per_epoch=train_steps_per_epoch,
                 verbose=progress_verbose,
                 validation_steps=val_steps_per_epoch,
@@ -125,10 +122,10 @@ def get_model_weights_CNN_cifar(
             )
             model.fit_generator(
                 train_datagen.flow(
-                    training_data, training_labels, batch_size=batch_size
+                    data.train, data.train_labels, batch_size=batch_size
                 ),
                 epochs=epochs,
-                validation_data=(val_data, val_labels),
+                validation_data=(data.val, data.val_labels),
                 steps_per_epoch=train_steps_per_epoch,
                 verbose=progress_verbose,
                 validation_steps=val_steps_per_epoch,

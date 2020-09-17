@@ -37,10 +37,7 @@ def define_and_train(
     iteration,
     model_name,
     load_for_inference,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     batch_size,
     classes,
     input_shape,
@@ -71,10 +68,7 @@ def define_and_train(
         model_name,
         load_for_inference,
         model_file,
-        training_data,
-        training_labels,
-        val_data,
-        val_labels,
+        data,
         train_datagen,
         batch_size,
         epochs,
@@ -90,14 +84,7 @@ def define_and_train(
 if __name__ == "__main__":
     accuracy = accuracy("CIFAR")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    (
-        training_data,
-        test_data,
-        training_labels,
-        test_labels,
-        val_data,
-        val_labels,
-    ) = init_data()
+    data = init_data()
 
     ResiliNet_no_information_flow_map = make_no_information_flow_map(
         "CIFAR/Imagenet", default_skip_hyperconnection_config
@@ -107,8 +94,8 @@ if __name__ == "__main__":
     )
     Vanilla_no_information_flow_map = make_no_information_flow_map("CIFAR/Imagenet")
 
-    train_steps_per_epoch = math.ceil(len(training_data) / batch_size)
-    val_steps_per_epoch = math.ceil(len(val_data) / batch_size)
+    train_steps_per_epoch = math.ceil(len(data.train) / batch_size)
+    val_steps_per_epoch = math.ceil(len(data.val) / batch_size)
 
     output = make_output_dictionary_average_accuracy(
         reliability_settings, num_iterations
@@ -124,10 +111,7 @@ if __name__ == "__main__":
             iteration,
             "Vanilla",
             load_for_inference,
-            training_data,
-            training_labels,
-            val_data,
-            val_labels,
+            data,
             batch_size,
             classes,
             input_shape,
@@ -145,10 +129,7 @@ if __name__ == "__main__":
             iteration,
             "DFG",
             load_for_inference,
-            training_data,
-            training_labels,
-            val_data,
-            val_labels,
+            data,
             batch_size,
             classes,
             input_shape,
@@ -166,10 +147,7 @@ if __name__ == "__main__":
             iteration,
             "ResiliNet",
             load_for_inference,
-            training_data,
-            training_labels,
-            val_data,
-            val_labels,
+            data,
             batch_size,
             classes,
             input_shape,
@@ -194,9 +172,7 @@ if __name__ == "__main__":
                 Vanilla_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                training_labels=training_labels,
-                test_data=test_data,
-                test_labels=test_labels,
+                data=data,
             )
             output["DFG"][str(reliability_setting)][
                 iteration - 1
@@ -205,9 +181,7 @@ if __name__ == "__main__":
                 DFG_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                training_labels=training_labels,
-                test_data=test_data,
-                test_labels=test_labels,
+                data=data,
             )
             output["ResiliNet"][str(reliability_setting)][
                 iteration - 1
@@ -216,9 +190,7 @@ if __name__ == "__main__":
                 ResiliNet_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                training_labels=training_labels,
-                test_data=test_data,
-                test_labels=test_labels,
+                data=data,
             )
         # clear session so that model will recycled back into memory
         K.clear_session()
