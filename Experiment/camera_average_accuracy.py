@@ -35,10 +35,7 @@ def define_and_train(
     iteration,
     model_name,
     load_for_inference,
-    train_data,
-    train_labels,
-    val_data,
-    val_labels,
+    data,
     input_shape,
     num_classes,
     hidden_units,
@@ -73,10 +70,7 @@ def define_and_train(
         model_name,
         load_for_inference,
         model_file,
-        train_data,
-        train_labels,
-        val_data,
-        val_labels,
+        data,
         epochs,
         batch_size,
         verbose,
@@ -91,9 +85,7 @@ def calc_accuracy(
     no_information_flow_map,
     reliability_setting,
     output_list,
-    train_labels,
-    test_data,
-    test_labels,
+    data,
 ):
     output_list.append(model_name + "\n")
     print(model_name)
@@ -104,9 +96,7 @@ def calc_accuracy(
         no_information_flow_map,
         reliability_setting,
         output_list,
-        training_labels=train_labels,
-        test_data=test_data,
-        test_labels=test_labels,
+        data=data,
     )
 
 
@@ -115,7 +105,7 @@ if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
 
-    train_data, val_data, test_data, train_labels, val_labels, test_labels = init_data()
+    data = init_data()
 
     ResiliNet_no_information_flow_map = make_no_information_flow_map(
         "Camera", default_skip_hyperconnection_config
@@ -149,10 +139,7 @@ if __name__ == "__main__":
             iteration,
             "ResiliNet",
             load_for_inference,
-            train_data,
-            train_labels,
-            val_data,
-            val_labels,
+            data,
             input_shape,
             num_classes,
             hidden_units,
@@ -164,10 +151,7 @@ if __name__ == "__main__":
             iteration,
             "DFG",
             load_for_inference,
-            train_data,
-            train_labels,
-            val_data,
-            val_labels,
+            data,
             input_shape,
             num_classes,
             hidden_units,
@@ -179,10 +163,7 @@ if __name__ == "__main__":
             iteration,
             "Vanilla",
             load_for_inference,
-            train_data,
-            train_labels,
-            val_data,
-            val_labels,
+            data,
             input_shape,
             num_classes,
             hidden_units,
@@ -200,9 +181,7 @@ if __name__ == "__main__":
                 ResiliNet_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                train_labels,
-                test_data,
-                test_labels,
+                data,
             )
             calc_accuracy(
                 iteration,
@@ -211,9 +190,7 @@ if __name__ == "__main__":
                 DFG_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                train_labels,
-                test_data,
-                test_labels,
+                data,
             )
             calc_accuracy(
                 iteration,
@@ -222,9 +199,7 @@ if __name__ == "__main__":
                 Vanilla_no_information_flow_map,
                 reliability_setting,
                 output_list,
-                train_labels,
-                test_data,
-                test_labels,
+                data,
             )
 
         # clear session so that model will recycled back into memory

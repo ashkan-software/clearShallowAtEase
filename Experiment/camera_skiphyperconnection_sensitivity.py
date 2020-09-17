@@ -97,10 +97,7 @@ def define_and_train(
     load_for_inference,
     reliability_setting,
     skip_hyperconnection_configuration,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     epochs,
     batch_size,
     input_shape,
@@ -147,10 +144,7 @@ def define_and_train(
         model_name,
         load_for_inference,
         model_file,
-        training_data,
-        training_labels,
-        val_data,
-        val_labels,
+        data,
         epochs,
         batch_size,
         verbose,
@@ -166,9 +160,7 @@ def calc_accuracy(
     reliability_setting,
     skip_hyperconnection_configuration,
     output_list,
-    training_labels,
-    test_data,
-    test_labels,
+    data,
 ):
     output_list.append(model_name + str(skip_hyperconnection_configuration) + "\n")
     print(model_name + str(skip_hyperconnection_configuration))
@@ -179,23 +171,14 @@ def calc_accuracy(
         no_information_flow_map,
         reliability_setting,
         output_list,
-        training_labels=training_labels,
-        test_data=test_data,
-        test_labels=test_labels,
+        data=data,
     )
 
 
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    (
-        training_data,
-        val_data,
-        test_data,
-        training_labels,
-        val_labels,
-        test_labels,
-    ) = init_data()
+    data = init_data()
 
     skip_hyperconnection_configurations = [
         # [f2,f3,f4,e1,e2,e3,e4]
@@ -244,10 +227,7 @@ if __name__ == "__main__":
                 load_for_inference,
                 default_reliability_setting,
                 skip_hyperconnection_configuration,
-                training_data,
-                training_labels,
-                val_data,
-                val_labels,
+                data,
                 epochs,
                 batch_size,
                 input_shape,
@@ -267,9 +247,7 @@ if __name__ == "__main__":
                     reliability_setting,
                     skip_hyperconnection_configuration,
                     output_list,
-                    training_labels,
-                    test_data,
-                    test_labels,
+                    data,
                 )
             K.clear_session()
             gc.collect()

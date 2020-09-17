@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+from Experiment.data import ProcessedData
 from Experiment.data_handler_camera import load_dataset
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import class_weight
@@ -66,7 +67,7 @@ def init_data():
         test_data[:, 4],
         test_data[:, 5],
     ]
-    return training_data, val_data, test_data, training_labels, val_labels, test_labels
+    return ProcessedData(training_data, val_data, test_data, training_labels, val_labels, test_labels)
 
 
 def get_model_weights_MLP_camera(
@@ -74,10 +75,7 @@ def get_model_weights_MLP_camera(
     model_name,
     load_for_inference,
     model_file,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     num_train_epochs,
     batch_size,
     verbose,
@@ -96,13 +94,13 @@ def get_model_weights_MLP_camera(
             period=1,
         )
         class_weights = class_weight.compute_class_weight(
-            "balanced", np.unique(training_labels), training_labels
+            "balanced", np.unique(data.train), data.train_labels
         )
         model.fit(
-            x=training_data,
-            y=training_labels,
+            x=data.train,
+            y=data.train_labels,
             batch_size=batch_size,
-            validation_data=(val_data, val_labels),
+            validation_data=(data.val, data,val_labels),
             callbacks=[modelCheckPoint],
             verbose=verbose,
             epochs=num_train_epochs,

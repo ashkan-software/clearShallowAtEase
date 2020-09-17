@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+from Experiment.data import ProcessedData
 from Experiment.data_handler_health import load_data
 from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
@@ -32,15 +33,14 @@ def init_data():
         test_data, test_labels, random_state=42, test_size=0.50, shuffle=True
     )
     num_vars = len(train_data[0])
-    return (
+    return ProcessedData(
         train_data,
         val_data,
         test_data,
         train_labels,
         val_labels,
         test_labels,
-        num_vars,
-    )
+    ), num_vars
 
 
 def get_model_weights_MLP_health(

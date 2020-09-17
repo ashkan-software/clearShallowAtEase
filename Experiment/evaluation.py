@@ -9,29 +9,29 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 def predict(
-    model, no_information_flow, train_labels, test_data, test_labels, experiment_name
+    model, no_information_flow, data, experiment_name
 ):
 
     if no_information_flow is True:
         if experiment_name == "CIFAR":
             # make into 1d vector
-            train_labels = [item for sublist in train_labels for item in sublist]
+            data.train_labels = [item for sublist in data.train_labels for item in sublist]
         elif experiment_name == "Camera":
             # reformat by switching the 1st and 2nd dimension
-            test_data = np.transpose(test_data, axes=[1, 0, 2, 3, 4])
+            data.test = np.transpose(data.test, axes=[1, 0, 2, 3, 4])
         # print("There is no data flow in the network")
-        preds = random_guess(train_labels, test_data)
+        preds = random_guess(data.train_labels, data.test)
         no_information_flow_count = 1
     else:
-        preds = model.predict(test_data)
+        preds = model.predict(data.test)
         preds = np.argmax(preds, axis=1)
         no_information_flow_count = 0
 
     # camera experiments should report precision
     if experiment_name == "Camera":
-        acc = f1_score(test_labels, preds, average="micro")
+        acc = f1_score(data.test_labels, preds, average="micro")
     else:
-        acc = accuracy_score(test_labels, preds)
+        acc = accuracy_score(data.test_labels, preds)
     return acc, no_information_flow_count
 
 

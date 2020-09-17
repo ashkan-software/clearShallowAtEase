@@ -33,10 +33,7 @@ def define_and_train(
     model_name,
     load_for_inference,
     failout_survival_setting,
-    training_data,
-    training_labels,
-    val_data,
-    val_labels,
+    data,
     epochs,
     batch_size,
     input_shape,
@@ -64,10 +61,7 @@ def define_and_train(
         model_name,
         load_for_inference,
         model_file,
-        training_data,
-        training_labels,
-        val_data,
-        val_labels,
+        data,
         epochs,
         batch_size,
         verbose,
@@ -107,14 +101,7 @@ def multiply_hyperconnection_weights(
 if __name__ == "__main__":
     accuracy = accuracy("Camera")
     calc_expected_accuracy = accuracy.calc_expected_accuracy
-    (
-        training_data,
-        val_data,
-        test_data,
-        training_labels,
-        val_labels,
-        test_labels,
-    ) = init_data()
+    data = init_data()
 
     load_for_inference = False
     failout_survival_settings = [
@@ -157,10 +144,7 @@ if __name__ == "__main__":
                 "Variable Failout 1x",
                 load_for_inference,
                 reliability_setting,
-                training_data,
-                training_labels,
-                val_data,
-                val_labels,
+                data,
                 epochs,
                 batch_size,
                 input_shape,
@@ -180,9 +164,7 @@ if __name__ == "__main__":
                 no_information_flow_map,
                 reliability_setting,
                 output_list,
-                training_labels=training_labels,
-                test_data=test_data,
-                test_labels=test_labels,
+                data=data,
             )
 
             # clear session so that model will recycled back into memory
@@ -196,10 +178,7 @@ if __name__ == "__main__":
                 "Fixed Failout 1x",
                 load_for_inference,
                 failout_survival_setting,
-                training_data,
-                training_labels,
-                val_data,
-                val_labels,
+                data,
                 epochs,
                 batch_size,
                 input_shape,
@@ -223,9 +202,7 @@ if __name__ == "__main__":
                     no_information_flow_map,
                     reliability_setting,
                     output_list,
-                    training_labels=training_labels,
-                    test_data=test_data,
-                    test_labels=test_labels,
+                    data=data,
                 )
             # clear session so that model will recycled back into memory
             K.clear_session()

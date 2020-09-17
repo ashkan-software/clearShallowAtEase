@@ -6,6 +6,7 @@ from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import multi_gpu_model
 from sklearn.model_selection import train_test_split
+from Experiment.data import ProcessedData
 
 
 class CustomModelCheckpoint(Callback):
@@ -70,7 +71,7 @@ def init_data():
     val_data, test_data, val_labels, test_labels = train_test_split(
         test_data, test_labels, random_state=42, test_size=0.50, shuffle=True
     )
-    return training_data, test_data, training_labels, test_labels, val_data, val_labels
+    return ProcessedData(training_data, val_data, test_data, training_labels, val_labels, test_labels)
 
 
 def get_model_weights_CNN_cifar(

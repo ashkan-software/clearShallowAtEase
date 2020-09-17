@@ -135,9 +135,7 @@ class accuracy:
         model,
         no_information_flow_map,
         output_list,
-        training_labels=None,
-        test_data=None,
-        test_labels=None,
+        data=None,
         test_generator=None,
         num_test_examples=None,
     ):
@@ -154,13 +152,7 @@ class accuracy:
                 node failure combination has an accessible path of information
                 to the cloud.
             output_list (list): list that contains string output of the experiment
-            training_labels (numpy array): 1D array that corresponds to each row in
-                the training data with a class label, used for calculating train
-                class distributio
-            test_data (numpy array): 2D array that contains the test data, assumes
-                that each column is a variable and that each row is a test example
-            test_labels (numpy array): 1D array that corresponds to each row in
-                the test data with a class label
+            data (ProcessedData): the processed data
             test_generator (generator): a generator for test data (for imagenet)
             num_test_examples (int): number of test examples (for imagenet)
         Returns:
@@ -207,9 +199,7 @@ class accuracy:
                     accuracy, _ = predict(
                         model,
                         no_information_flow,
-                        training_labels,
-                        test_data,
-                        test_labels,
+                        data,
                         self.experiment_name,
                     )
                 accuracy_list.append(accuracy)
@@ -236,9 +226,7 @@ class accuracy:
         no_information_flow_map,
         reliability_setting,
         output_list,
-        training_labels=None,
-        test_data=None,
-        test_labels=None,
+        data=None,
         test_generator=None,
         num_test_examples=None,
     ):
@@ -252,13 +240,7 @@ class accuracy:
                 to the cloud.
             reliability_setting (list): List of the reliability rate of all nodes
             output_list (list): list that contains string output of the experiment
-            training_labels (numpy array): 1D array that corresponds to each row in
-                the training data with a class label, used for calculating train
-                class distributio
-            test_data (numpy array): 2D array that contains the test data, assumes
-                that each column is a variable and that each row is a test example
-            test_labels (numpy array): 1D array that corresponds to each row in the
-                test data with a class label
+            data (ProcessedData): the processed data
             test_generator (generator): a generator for test data (for imagenet)
             num_test_examples (int): number of test examples (for imagenet)
         Returns:
@@ -271,9 +253,7 @@ class accuracy:
             model,
             no_information_flow_map,
             output_list,
-            training_labels,
-            test_data,
-            test_labels,
+            data,
             test_generator,
             num_test_examples,
         )
