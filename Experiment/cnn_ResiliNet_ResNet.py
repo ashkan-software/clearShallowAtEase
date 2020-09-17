@@ -25,7 +25,7 @@ from Experiment.custom_ops import InputMux
 from keras.layers import Lambda
 
 
-MUX_ADDS = False
+ResiliNetPlus = False
 
 
 def define_ResiliNet_CNN_ResNet(
@@ -200,11 +200,11 @@ def define_cnn_ResiliNet_architecture_fog(
         multiply_hyperconnection_weight_layer_IoTf == None
         or multiply_hyperconnection_weight_layer_ef == None
     ):
-        fog_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [skip_iotfog, edge_output]
         )
     else:
-        fog_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [
                 multiply_hyperconnection_weight_layer_IoTf(skip_iotfog),
                 multiply_hyperconnection_weight_layer_ef(edge_output),
@@ -245,11 +245,11 @@ def define_cnn_ResiliNet_architecture_cloud(
         multiply_hyperconnection_weight_layer_fc == None
         or multiply_hyperconnection_weight_layer_ec == None
     ):
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [skip_edgecloud, fog_output]
         )
     else:
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [
                 multiply_hyperconnection_weight_layer_ec(skip_edgecloud),
                 multiply_hyperconnection_weight_layer_fc(fog_output),

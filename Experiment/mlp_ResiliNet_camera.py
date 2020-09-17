@@ -21,7 +21,7 @@ from keras.layers import Activation, Dense, Input, Lambda, add
 from keras.models import Model, Sequential
 
 
-MUX_ADDS = False
+ResiliNetPlus = False
 
 
 def define_ResiliNet_MLP(
@@ -218,15 +218,15 @@ def define_MLP_ResiliNet_architecture_fog2(
         or multiply_hyperconnection_weight_layer["f3f2"] == None
         or multiply_hyperconnection_weight_layer["f4f2"] == None
     ):
-        fog2_input_left = Lambda(InputMux(MUX_ADDS), name="node3_input_left")(
+        fog2_input_left = Lambda(InputMux(ResiliNetPlus), name="node3_input_left")(
             [edge1_output, fog3_output]
         )
         skip_hyperconnections = add([edge2_output, edge3_output, edge4_output])
-        fog2_input_right = Lambda(InputMux(MUX_ADDS), name="node3_input_right")(
+        fog2_input_right = Lambda(InputMux(ResiliNetPlus), name="node3_input_right")(
             [skip_hyperconnections, fog4_output]
         )
     else:
-        fog2_input_left = Lambda(InputMux(MUX_ADDS), name="node3_input_left")(
+        fog2_input_left = Lambda(InputMux(ResiliNetPlus), name="node3_input_left")(
             [
                 multiply_hyperconnection_weight_layer["e1f2"](edge1_output),
                 multiply_hyperconnection_weight_layer["f3f2"](fog3_output),
@@ -239,7 +239,7 @@ def define_MLP_ResiliNet_architecture_fog2(
                 multiply_hyperconnection_weight_layer["e4f2"](edge4_output),
             ]
         )
-        fog2_input_right = Lambda(InputMux(MUX_ADDS), name="node3_input_right")(
+        fog2_input_right = Lambda(InputMux(ResiliNetPlus), name="node3_input_right")(
             [
                 skip_hyperconnections,
                 multiply_hyperconnection_weight_layer["f4f2"](fog4_output),
@@ -267,7 +267,7 @@ def define_MLP_ResiliNet_architecture_fog1(
         or multiply_hyperconnection_weight_layer["f4f1"] == None
     ):
         skip_hyperconnections = add([fog3_output, fog4_output])
-        fog1_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog1_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [skip_hyperconnections, fog2_output]
         )
     else:
@@ -277,7 +277,7 @@ def define_MLP_ResiliNet_architecture_fog1(
                 multiply_hyperconnection_weight_layer["f4f1"](fog4_output),
             ]
         )
-        fog1_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog1_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [
                 skip_hyperconnections,
                 multiply_hyperconnection_weight_layer["f2f1"](fog2_output),
@@ -301,11 +301,11 @@ def define_MLP_ResiliNet_architecture_cloud(
         or multiply_hyperconnection_weight_layer["f1c"] == None
         or multiply_hyperconnection_weight_layer["f2c"] == None
     ):
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [fog2_output, fog1_output]
         )
     else:
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [
                 multiply_hyperconnection_weight_layer["f2c"](fog2_output),
                 multiply_hyperconnection_weight_layer["f1c"](fog1_output),

@@ -9,7 +9,7 @@ from Experiment.cnn_DFG_MobileNet import (
     default_skip_hyperconnection_config,
     define_DFG_CNN_MobileNet,
 )
-from Experiment.cnn_ResiliNet_MobileNet import MUX_ADDS, define_ResiliNet_CNN_MobileNet
+from Experiment.cnn_ResiliNet_MobileNet import ResiliNetPlus, define_ResiliNet_CNN_MobileNet
 from Experiment.common import (
     average,
     convert_to_string,
@@ -123,7 +123,7 @@ def define_and_train(
             num_gpus=num_gpus,
         )
     else:  # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
-        mux_adds_str = "mux_adds" if MUX_ADDS else ""
+        mux_adds_str = "mux_adds" if ResiliNetPlus else ""
         model_file = (
             "models/"
             + str(iteration)
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     val_steps_per_epoch = math.ceil(len(data.val) / batch_size)
 
     make_results_folder()
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = (
         "results/cifar_skiphyperconnection_sensitivity_results" + mux_adds_str + ".txt"
     )

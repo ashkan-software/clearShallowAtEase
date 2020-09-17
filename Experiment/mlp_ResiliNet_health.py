@@ -20,7 +20,7 @@ from keras.layers import Activation, Dense, Input, Lambda
 from keras.models import Model, Sequential
 
 
-MUX_ADDS = False
+ResiliNetPlus = False
 
 
 def define_ResiliNet_MLP(
@@ -150,11 +150,11 @@ def define_MLP_ResiliNet_architecture_fog2(
         multiply_hyperconnection_weight_layer_IoTf2 == None
         or multiply_hyperconnection_weight_layer_ef2 == None
     ):
-        fog2_input = Lambda(InputMux(MUX_ADDS), name="node3_input")(
+        fog2_input = Lambda(InputMux(ResiliNetPlus), name="node3_input")(
             [iot_skip_output, edge_output]
         )
     else:
-        fog2_input = Lambda(InputMux(MUX_ADDS), name="node3_input")(
+        fog2_input = Lambda(InputMux(ResiliNetPlus), name="node3_input")(
             [
                 multiply_hyperconnection_weight_layer_IoTf2(iot_skip_output),
                 multiply_hyperconnection_weight_layer_ef2(edge_output),
@@ -175,11 +175,11 @@ def define_MLP_ResiliNet_architecture_fog1(
         multiply_hyperconnection_weight_layer_ef1 == None
         or multiply_hyperconnection_weight_layer_f2f1 == None
     ):
-        fog1_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog1_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [edge_skip_output, fog2_output]
         )
     else:
-        fog1_input = Lambda(InputMux(MUX_ADDS), name="node2_input")(
+        fog1_input = Lambda(InputMux(ResiliNetPlus), name="node2_input")(
             [
                 multiply_hyperconnection_weight_layer_ef1(edge_skip_output),
                 multiply_hyperconnection_weight_layer_f2f1(fog2_output),
@@ -201,11 +201,11 @@ def define_MLP_ResiliNet_architecture_cloud(
         multiply_hyperconnection_weight_layer_f1c == None
         or multiply_hyperconnection_weight_layer_f2c == None
     ):
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [fog2_skip_output, fog1_output]
         )
     else:
-        cloud_input = Lambda(InputMux(MUX_ADDS), name="node1_input")(
+        cloud_input = Lambda(InputMux(ResiliNetPlus), name="node1_input")(
             [
                 multiply_hyperconnection_weight_layer_f2c(fog2_skip_output),
                 multiply_hyperconnection_weight_layer_f1c(fog1_output),

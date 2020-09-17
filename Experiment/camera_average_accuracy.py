@@ -27,7 +27,7 @@ from Experiment.mlp_DFG_camera import (
     default_skip_hyperconnection_config,
     define_DFG_MLP,
 )
-from Experiment.mlp_ResiliNet_camera import MUX_ADDS, define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_camera import ResiliNetPlus, define_ResiliNet_MLP
 from Experiment.mlp_Vanilla_camera import define_vanilla_model_MLP
 
 
@@ -45,7 +45,7 @@ def define_and_train(
 ):
     # ResiliNet
     if model_name == "ResiliNet":
-        mux_adds_str = "mux_adds" if MUX_ADDS else ""
+        mux_adds_str = "mux_adds" if ResiliNetPlus else ""
         model = define_ResiliNet_MLP(input_shape, num_classes, hidden_units)
         model_file = (
             "models/"
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     load_for_inference = False
 
     # file name with the experiments accuracy output
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = "results/camera_average_accuracy" + mux_adds_str + ".txt"
     verbose = 2
 

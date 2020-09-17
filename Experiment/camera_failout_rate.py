@@ -24,7 +24,7 @@ from Experiment.common_MLP_camera import (
     reliability_settings,
 )
 from Experiment.mlp_DFG_camera import default_skip_hyperconnection_config
-from Experiment.mlp_ResiliNet_camera import MUX_ADDS, define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_camera import ResiliNetPlus, define_ResiliNet_MLP
 from keras.callbacks import ModelCheckpoint
 
 
@@ -41,7 +41,7 @@ def define_and_train(
     hidden_units,
     verbose,
 ):
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     model = define_ResiliNet_MLP(
         input_shape,
         num_classes,
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     )
 
     # file name with the experiments accuracy output
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = "results/camera_failout_rate" + mux_adds_str + ".txt"
     verbose = 2
     # keep track of output so that output is in order

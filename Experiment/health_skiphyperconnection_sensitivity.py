@@ -25,7 +25,7 @@ from Experiment.mlp_DFG_health import (
     default_skip_hyperconnection_config,
     define_DFG_MLP,
 )
-from Experiment.mlp_ResiliNet_health import MUX_ADDS, define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_health import ResiliNetPlus, define_ResiliNet_MLP
 from keras.callbacks import ModelCheckpoint
 
 
@@ -121,7 +121,7 @@ def define_and_train(
             + "health_skiphyperconnection_sensitivity_DFG.h5"
         )
     else:  # model_name is "ResiliNet Hyperconnection Weight Sensitivity"
-        mux_adds_str = "mux_adds" if MUX_ADDS else ""
+        mux_adds_str = "mux_adds" if ResiliNetPlus else ""
         model = define_ResiliNet_MLP(
             num_vars,
             num_classes,
@@ -198,7 +198,7 @@ if __name__ == "__main__":
         ] = make_no_information_flow_map("Health", skip_hyperconnection_configuration)
 
     load_for_inference = False
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = (
         "results/health_skiphyperconnection_sensitivity" + mux_adds_str + ".txt"
     )

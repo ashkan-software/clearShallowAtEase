@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 from Experiment.accuracy import accuracy
 from Experiment.cnn_DFG_MobileNet import default_skip_hyperconnection_config
-from Experiment.cnn_ResiliNet_MobileNet import MUX_ADDS, define_ResiliNet_CNN_MobileNet
+from Experiment.cnn_ResiliNet_MobileNet import ResiliNetPlus, define_ResiliNet_CNN_MobileNet
 from Experiment.common import (
     average,
     make_no_information_flow_map,
@@ -55,7 +55,7 @@ def define_and_train(
     val_steps_per_epoch,
     num_gpus,
 ):
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     model_file = (
         "models/"
         + str(iteration)
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         failout_survival_settings, reliability_settings, num_iterations
     )
     make_results_folder()
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = "results/cifar_failout_results" + mux_adds_str + ".txt"
     for iteration in range(1, num_iterations + 1):
         output_list.append("ITERATION " + str(iteration) + "\n")

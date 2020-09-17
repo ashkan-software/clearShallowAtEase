@@ -4,11 +4,11 @@ import keras.layers as layers
 from Experiment.cnn_DFG_MobileNet import define_DFG_CNN_MobileNet
 from Experiment.cnn_DFG_ResNet import define_DFG_CNN_ResNet
 from Experiment.cnn_ResiliNet_MobileNet import (
-    MUX_ADDS as MUX_ADDS_MobileNet,
+    ResiliNetPlus as ResiliNetPlus_MobileNet,
     define_ResiliNet_CNN_MobileNet,
 )
 from Experiment.cnn_ResiliNet_ResNet import (
-    MUX_ADDS as MUX_ADDS_ResNet,
+    ResiliNetPlus as ResiliNetPlus_ResNet,
     define_ResiliNet_CNN_ResNet,
 )
 from Experiment.cnn_Vanilla_MobileNet import define_vanilla_CNN_MobileNet
@@ -30,7 +30,7 @@ def define_model(
     # ResiliNet
     if model_name == "ResiliNet":
         if dataset_name == "cifar_resnet":
-            mux_adds_str = "mux_adds" if MUX_ADDS_ResNet else ""
+            mux_adds_str = "mux_adds" if ResiliNetPlus_ResNet else ""
             model, parallel_model = define_ResiliNet_CNN_ResNet(
                 input_shape=input_shape,
                 classes=classes,
@@ -51,7 +51,7 @@ def define_model(
                 num_gpus=num_gpus,
             )
         else:
-            mux_adds_str = "mux_adds" if MUX_ADDS_MobileNet else ""
+            mux_adds_str = "mux_adds" if ResiliNetPlus_MobileNet else ""
             model, parallel_model = define_ResiliNet_CNN_MobileNet(
                 classes=classes,
                 input_shape=input_shape,

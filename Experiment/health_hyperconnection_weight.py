@@ -26,7 +26,7 @@ from Experiment.mlp_DFG_health import (
     default_skip_hyperconnection_config,
     define_DFG_MLP,
 )
-from Experiment.mlp_ResiliNet_health import MUX_ADDS, define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_health import ResiliNetPlus, define_ResiliNet_MLP
 from keras.callbacks import ModelCheckpoint
 
 
@@ -62,7 +62,7 @@ def define_and_train(
             + "health_hyperconnection_DFG.h5"
         )
     else:  # model_name is "ResiliNet Hyperconnection Weight"
-        mux_adds_str = "mux_adds" if MUX_ADDS else ""
+        mux_adds_str = "mux_adds" if ResiliNetPlus else ""
         model = define_ResiliNet_MLP(
             num_vars,
             num_classes,
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     )
     load_for_inference = False
     # file name with the experiments accuracy output
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = "results/health_hyperconnection_weight" + mux_adds_str + ".txt"
     verbose = 2
     model_name = "ResiliNet Hyperconnection Weight"

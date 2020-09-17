@@ -1,11 +1,13 @@
 
-# [Code] Failout: Achieving Failure-Resilient Inference in Distributed Neural Networks
+# [Code] ResiliNet: Failure-Resilient Inference in Distributed Neural Networks
 
-This repository is for the code related to the paper *Failout: Achieving Failure-Resilient Inference in Distributed Neural Networks*.
+This repository is for the code related to the paper *ResiliNet: Failure-Resilient Inference in Distributed Neural Networks*.
 
-## What is Failout?
+## What is ResiliNet?
 
-When a neural network is partitioned and distributed across physical nodes, failure of physical nodes causes the failure of the neural units that are placed on those nodes, which results in a significant performance drop. We introduce ResiliNet, a scheme for making inference in distributed neural networks resilient to physical node failures. ResiliNet combines two concepts to provide resiliency: skip connection in residual neural networks, and a novel technique called failout. Failout simulates physical node failure conditions during training using dropout, and is specifically designed to improve the resiliency of distributed neural networks. 
+Federated Learning aims to train distributed deep models without sharing the raw data with the centralized server. Similarly, in Split Learning, by partitioning a neural network and distributing it across several physical nodes, activations and gradients are exchanged between physical nodes, rather than raw data. Nevertheless, when a neural network is partitioned and distributed among physical nodes, failure of physical nodes causes the failure of the neural units that are placed on those nodes, which results in a significant performance drop. 
+
+ResiliNet is a scheme for making inference in distributed neural networks resilient to physical node failures. ResiliNet combines two concepts to provide resiliency: skip hyperconnection, a concept for skipping nodes in distributed neural networks similar to skip connection in resnets, and a novel technique called failout. Failout simulates physical node failure conditions during training using dropout, and is specifically designed to improve the resiliency of distributed neural networks. 
 
 ## How to run
 
@@ -21,14 +23,18 @@ If you are using Python 3.x, replace `python` with `python3`. In general, you ca
  python Experiment/<dataset>_<experiment-type>.py 
 ```
   
- where `<dataset>` is either `health`, `cifar_mobilenet`,  `cifar_resnet`, or `imagenet` (Note that, `camera` is only for *experimental* purposes with a distribtued neural network that is both vertically and horizontally split.), and `<experiment-type>` is either `average_accuracy`, `hyperconnection_weight`, `failout_rate`, or `skiphyperconnection_sensitivity`. 
+ where `<dataset>` is either `health`, `cifar_mobilenet`,  `cifar_resnet`, or `imagenet` (Note that, `camera` is only for *experimental* purposes with a distribtued neural network that is both vertically and horizontally split), and `<experiment-type>` is either `average_accuracy`, `hyperconnection_weight`, `failout_rate`, or `skiphyperconnection_sensitivity`. 
 
 The datasets and the preprocessing methods are explained in the paper. The experiments are as follows:
 
-- `average_accuracy`: (Section 3.3). Obtains average accuracy, in addition to accuracy for individual physical node failures.
-- `hyperconnection_weight`: (Section 3.4.1) Obtains results for different choices of hyperconnection weights.
-- `failout_rate`: (Section 3.4.2) Obtains results for different rates of failout.
-``skiphyperconnection_sensitivity`: (Section 3.4.3) Obtains results regarding which skip hyperconnections are more critical. 
+- `average_accuracy`: Obtains average accuracy, in addition to the accuracy for individual physical node failures.
+- `hyperconnection_weight`: Obtains results for different choices of hyperconnection weights. (What is the best choice of weights for the hyperconnections?)
+- `failout_rate`: Obtains results for different rates of failout. (What is the optimal rate of failout?)
+``skiphyperconnection_sensitivity`: Obtains results for sensitivity of skip hyperconnections. (Which skip hyperconnections are more important?) 
+
+In order to run the experiments for different partition of distributed DNN, you can choose between different values of `PARTITION_SETING`. The parameter `PARTITION_SETING`, depending on the experiment, is in the following files: `mlp_Vanilla_health.py`, `cnn_Vanilla_MobileNet.py`, and `cnn_Vanilla_ResNet.py`.
+
+In order to run experiments using ResiliNet+, you can set `ResiliNetPlus` to `True`. The parameter `ResiliNetPlus`, depending on the experiment, is in the following files: `mlp_ResiliNet_health.py`, `cnn_ResiliNet_MobileNet.py`, and `cnn_ResiliNet_ResNet.py`.
 
 ## Dependencies
 

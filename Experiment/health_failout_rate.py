@@ -23,7 +23,7 @@ from Experiment.common_MLP_health import (
     reliability_settings,
 )
 from Experiment.mlp_DFG_health import default_skip_hyperconnection_config
-from Experiment.mlp_ResiliNet_health import MUX_ADDS, define_ResiliNet_MLP
+from Experiment.mlp_ResiliNet_health import ResiliNetPlus, define_ResiliNet_MLP
 from keras.callbacks import ModelCheckpoint
 
 
@@ -40,7 +40,7 @@ def define_and_train(
     hidden_units,
     verbose,
 ):
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     model = define_ResiliNet_MLP(
         num_vars,
         num_classes,
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         "Health", default_skip_hyperconnection_config
     )
     # file name with the experiments accuracy output
-    mux_adds_str = "mux_adds" if MUX_ADDS else ""
+    mux_adds_str = "mux_adds" if ResiliNetPlus else ""
     output_name = "results/health_failout_rate" + mux_adds_str + ".txt"
     verbose = 2
     # keep track of output so that output is in order
