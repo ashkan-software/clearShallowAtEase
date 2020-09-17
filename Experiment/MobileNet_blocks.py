@@ -1,6 +1,7 @@
 import keras.backend as backend
 import keras.layers as layers
 
+
 # these methods (_conv_block() and _depthwise_conv_block()) directly borrowed from Keras' implementation of MobileNet
 # https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet.py
 def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1)):
@@ -52,20 +53,24 @@ def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1)):
     # Returns
         Output tensor of block.
     """
-    channel_axis = 1 if backend.image_data_format() == 'channels_first' else -1
+    channel_axis = 1 if backend.image_data_format() == "channels_first" else -1
     filters = int(filters * alpha)
-    x = layers.ZeroPadding2D(padding=((0, 1), (0, 1)), name='conv1_pad')(inputs)
-    x = layers.Conv2D(filters, kernel,
-                      padding='valid',
-                      use_bias=False,
-                      strides=strides,
-                      name='conv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='conv1_bn')(x)
-    return layers.ReLU(6., name='conv1_relu')(x)
+    x = layers.ZeroPadding2D(padding=((0, 1), (0, 1)), name="conv1_pad")(inputs)
+    x = layers.Conv2D(
+        filters, kernel, padding="valid", use_bias=False, strides=strides, name="conv1"
+    )(x)
+    x = layers.BatchNormalization(axis=channel_axis, name="conv1_bn")(x)
+    return layers.ReLU(6.0, name="conv1_relu")(x)
 
 
-def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
-                          depth_multiplier=1, strides=(1, 1), block_id=1):
+def _depthwise_conv_block(
+    inputs,
+    pointwise_conv_filters,
+    alpha,
+    depth_multiplier=1,
+    strides=(1, 1),
+    block_id=1,
+):
     """Adds a depthwise convolution block.
 
     A depthwise convolution block consists of a depthwise conv,
@@ -117,29 +122,33 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
     # Returns
         Output tensor of block.
     """
-    channel_axis = 1 if backend.image_data_format() == 'channels_first' else -1
+    channel_axis = 1 if backend.image_data_format() == "channels_first" else -1
     pointwise_conv_filters = int(pointwise_conv_filters * alpha)
 
     if strides == (1, 1):
         x = inputs
     else:
-        x = layers.ZeroPadding2D(((0, 1), (0, 1)),
-                                 name='conv_pad_%d' % block_id)(inputs)
-    x = layers.DepthwiseConv2D((3, 3),
-                               padding='same' if strides == (1, 1) else 'valid',
-                               depth_multiplier=depth_multiplier,
-                               strides=strides,
-                               use_bias=False,
-                               name='conv_dw_%d' % block_id)(x)
-    x = layers.BatchNormalization(
-        axis=channel_axis, name='conv_dw_%d_bn' % block_id)(x)
-    x = layers.ReLU(6., name='conv_dw_%d_relu' % block_id)(x)
+        x = layers.ZeroPadding2D(((0, 1), (0, 1)), name="conv_pad_%d" % block_id)(
+            inputs
+        )
+    x = layers.DepthwiseConv2D(
+        (3, 3),
+        padding="same" if strides == (1, 1) else "valid",
+        depth_multiplier=depth_multiplier,
+        strides=strides,
+        use_bias=False,
+        name="conv_dw_%d" % block_id,
+    )(x)
+    x = layers.BatchNormalization(axis=channel_axis, name="conv_dw_%d_bn" % block_id)(x)
+    x = layers.ReLU(6.0, name="conv_dw_%d_relu" % block_id)(x)
 
-    x = layers.Conv2D(pointwise_conv_filters, (1, 1),
-                      padding='same',
-                      use_bias=False,
-                      strides=(1, 1),
-                      name='conv_pw_%d' % block_id)(x)
-    x = layers.BatchNormalization(axis=channel_axis,
-                                  name='conv_pw_%d_bn' % block_id)(x)
-    return layers.ReLU(6., name='conv_pw_%d_relu' % block_id)(x)
+    x = layers.Conv2D(
+        pointwise_conv_filters,
+        (1, 1),
+        padding="same",
+        use_bias=False,
+        strides=(1, 1),
+        name="conv_pw_%d" % block_id,
+    )(x)
+    x = layers.BatchNormalization(axis=channel_axis, name="conv_pw_%d_bn" % block_id)(x)
+    return layers.ReLU(6.0, name="conv_pw_%d_relu" % block_id)(x)

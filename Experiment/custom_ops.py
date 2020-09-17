@@ -1,7 +1,8 @@
-from keras.layers import Layer, Add, Lambda
-import keras.layers as layers
 import keras.backend as K
+import keras.layers as layers
 import tensorflow as tf
+from keras.layers import Add, Lambda, Layer
+
 
 class Failout(Layer):
     """Applies Failout to the output of a node.
@@ -10,6 +11,7 @@ class Failout(Layer):
         failout_survival_rate: float between 0 and 1. Probability of survival of a node (1 - prob_failure).
         seed: A Python integer to use as random seed.
     """
+
     def __init__(self, failout_survival_rate, seed=None, **kwargs):
         super(Failout, self).__init__(**kwargs)
         self.seed = seed
@@ -17,7 +19,7 @@ class Failout(Layer):
         self.has_failed = None
 
     def call(self, inputs):
-        rand = K.random_uniform(K.variable(0).shape, seed = self.seed)
+        rand = K.random_uniform(K.variable(0).shape, seed=self.seed)
         # assumes that there is only one input in inputs
         fail = Lambda(lambda x: x * 0)
         self.has_failed = K.greater(rand, self.failout_survival_rate)
@@ -29,10 +31,10 @@ class Failout(Layer):
 
     def get_config(self):
         config = {
-                  'seed': self.seed,
-                  'failout_survival_rate': self.failout_survival_rate,
-                  'has_failed': self.has_failed
-                }
+            "seed": self.seed,
+            "failout_survival_rate": self.failout_survival_rate,
+            "has_failed": self.has_failed,
+        }
         base_config = super(Failout, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
@@ -48,6 +50,7 @@ class InputMux(Add):
         mux_adds: Boolean Tensor showing if this operator should do addition (ResiliNet+)
             or it is doing multiplexing (ResiliNet)
     """
+
     def __init__(self, mux_adds=False, **kwargs):
         super(InputMux, self).__init__(**kwargs)
         self.mux_adds = mux_adds
@@ -61,11 +64,13 @@ class InputMux(Add):
         """
 
         if self.mux_adds:
-            output = layers.add(inputs) # calls the add function
-        else: 
-            sum = K.sum(inputs[1]) # sum of tensor value coming from the node below
+            output = layers.add(inputs)  # calls the add function
+        else:
+            sum = K.sum(inputs[1])  # sum of tensor value coming from the node below
             zero = K.variable(0)
             node_below_has_failed = K.equal(sum, zero)
-            output = K.switch(node_below_has_failed, inputs[0], inputs[1]) # selects one of the inputs. 
+            output = K.switch(
+                node_below_has_failed, inputs[0], inputs[1]
+            )  # selects one of the inputs.
             # If the node below has failed, use the input from skip hyperconnection, otherwise, use the input from the node below
         return output

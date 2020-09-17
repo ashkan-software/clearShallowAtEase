@@ -1,9 +1,9 @@
-import cv2
-import os
 import glob
-from sklearn.utils import shuffle
-import numpy as np
+import os
 
+import cv2
+import numpy as np
+from sklearn.utils import shuffle
 
 
 def load_dataset(train_path, image_size, labels):
@@ -13,25 +13,25 @@ def load_dataset(train_path, image_size, labels):
     cls = [[] for x in range(243)]
     person = 0
     car = 0
-    for label in labels:   
+    for label in labels:
         index = labels.index(label)
-        path = os.path.join(train_path, label, '*g')
+        path = os.path.join(train_path, label, "*g")
         files = glob.glob(path)
         for fl in files:
             image = cv2.imread(fl)
             cam = int(fl[-16:-15])
             frame = int(fl[-7:-4])
             # already processed images, don't need to cheeck for 'None'
-            #if image is None:
+            # if image is None:
             #    continue
             # we assume the image size is 32x32
-            #image = cv2.resize(image, (image_size, image_size),0,0, cv2.INTER_LINEAR)
+            # image = cv2.resize(image, (image_size, image_size),0,0, cv2.INTER_LINEAR)
 
             image = image.astype(np.float32)
 
             # normalize image for smaller range of pixel values [0,1]
             image = np.multiply(image, 1.0 / 255.0)
-        
+
             # figure out a better way to deal with cls, img_names, img_labels without changing structure
             images[frame].append(image)
             label = np.zeros(len(labels))
@@ -53,11 +53,11 @@ def load_dataset(train_path, image_size, labels):
             split_images = images[i][-6:]
             images[i] = images[i][:-6]
             images.append(split_images)
-            
+
             split_labels = img_labels[i][-6:]
             img_labels.append(split_labels)
             img_labels[i] = img_labels[i][:-6]
-            
+
             split_names = img_names[i][-6:]
             img_names[i] = img_names[i][:-6]
             img_names.append(split_names)
@@ -76,7 +76,7 @@ def load_dataset(train_path, image_size, labels):
             del img_labels[i]
             del cls[i]
             len_imgs = len(images[i])
-        #images[i] = np.concatenate((images[i][0],images[i][1],images[i][2],images[i][3],images[i][4],images[i][5]), axis = 1)
+        # images[i] = np.concatenate((images[i][0],images[i][1],images[i][2],images[i][3],images[i][4],images[i][5]), axis = 1)
         i += 1
     non_one_hot = img_labels
     # make every element of img_labels a vec
@@ -85,14 +85,14 @@ def load_dataset(train_path, image_size, labels):
             img_labels[l] = img_labels[l][0]
     car = 0
     person = 0
-    
+
     for l in img_labels:
         if l[0] == 1:
             person += 1
         if l[1] == 1:
             car += 1
     bus = len(img_labels) - car - person
-    
+
     images = np.array(images)
     img_labels = np.array(img_labels)
     img_names = np.array(img_names)
@@ -100,9 +100,16 @@ def load_dataset(train_path, image_size, labels):
 
     return images, img_labels, img_names, cls
 
-def read_dataset(dataset_path, image_size, labels = ['person_images', 'car_images', 'bus_images']):
 
-    images, img_labels, img_names, classes = load_dataset(dataset_path, image_size, labels)
-    images, img_labels, img_names, classes = shuffle(images, img_labels, img_names, classes)
+def read_dataset(
+    dataset_path, image_size, labels=["person_images", "car_images", "bus_images"]
+):
+
+    images, img_labels, img_names, classes = load_dataset(
+        dataset_path, image_size, labels
+    )
+    images, img_labels, img_names, classes = shuffle(
+        images, img_labels, img_names, classes
+    )
 
     return images, img_labels, img_names, classes
